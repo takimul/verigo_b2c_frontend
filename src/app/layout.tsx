@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ToastProvider from "@/components/ui/ToastProvider";
 import "./globals.css";
+import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: {
@@ -22,6 +23,8 @@ export default function RootLayout({
         <ToastProvider />
 
         {children}
+
+        <Footer />
       </body>
     </html>
   );

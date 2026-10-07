@@ -74,7 +74,7 @@ export default function FeaturedProducts() {
 
         if (!mounted) return;
 
-        setProducts(response.data.products ?? []);
+        setProducts(response.data.items ?? []);
       } catch (error) {
         console.error("Failed to load featured products:", error);
 

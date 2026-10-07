@@ -7,20 +7,24 @@ interface ApiResponse<T> {
   data: T;
 }
 
-interface ProductListData {
-  products: Product[];
-  total: number;
+export interface ProductPagination {
   page: number;
   limit: number;
-  totalPages?: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface ProductListData {
+  items: Product[];
+  pagination: ProductPagination;
 }
 
 export interface GetProductsParams {
+  categoryId?: string;
+  featured?: boolean;
+  search?: string;
   page?: number;
   limit?: number;
-  categoryId?: string;
-  search?: string;
-  featured?: boolean;
 }
 
 export async function getProducts(

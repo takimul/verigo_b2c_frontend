@@ -5,9 +5,9 @@ export type CustomizationStatus = "YES" | "NO" | "AVAILABLE_ON_REQUEST";
 export interface ProductImage {
   id: string;
   url: string;
-  publicId: string;
-  isPrimary: boolean;
+  altText: string | null;
   sortOrder: number;
+  isPrimary: boolean;
 }
 
 export interface ProductCategory {
@@ -21,12 +21,34 @@ export interface Product {
   name: string;
   slug: string;
   description: string | null;
-  moq: number;
-  customization: CustomizationStatus;
+
   status: ProductStatus;
-  featured: boolean;
+
+  fabric: string | null;
+  gsm: number | null;
+  composition: string | null;
+  washingInfo: string | null;
+
+  sizes: string[];
+  colors: string[];
+
+  moq: number;
+
+  customization: CustomizationStatus;
+
+  customFabric: boolean;
+  customColor: boolean;
+  customPrinting: boolean;
+  customEmbroidery: boolean;
+  customNeckLabel: boolean;
+  customPackaging: boolean;
+
+  isFeatured: boolean;
+
   category: ProductCategory;
+
   images: ProductImage[];
+
   createdAt: string;
   updatedAt: string;
 }
