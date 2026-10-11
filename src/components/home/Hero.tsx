@@ -24,7 +24,7 @@
 //       </motion.div>
 
 //       {/* Soft overlay */}
-//       <div className="absolute inset-0 bg-gradient-to-r from-[#17120e]/65 via-[#17120e]/20 to-transparent" />
+//       <div className="absolute inset-0 bg-linear-to-r from-[#17120e]/65 via-[#17120e]/20 to-transparent" />
 
 //       {/* Content */}
 //       <div className="relative mx-auto flex min-h-[calc(100svh-76px)] max-w-[1600px] items-end px-5 pb-14 sm:px-8 sm:pb-16 lg:px-12 lg:pb-20">
@@ -92,21 +92,21 @@
 //           >
 //             <div>
 //               <p className="font-serif text-[27px]">10+</p>
-//               <p className="mt-1 text-[9px] uppercase tracking-[0.1em] text-white/65">
+//               <p className="mt-1 text-[9px] uppercase tracking-widest text-white/65">
 //                 Years Experience
 //               </p>
 //             </div>
 
 //             <div>
 //               <p className="font-serif text-[27px]">30+</p>
-//               <p className="mt-1 text-[9px] uppercase tracking-[0.1em] text-white/65">
+//               <p className="mt-1 text-[9px] uppercase tracking-widest text-white/65">
 //                 Global Clients
 //               </p>
 //             </div>
 
 //             <div>
 //               <p className="font-serif text-[27px]">100+</p>
-//               <p className="mt-1 text-[9px] uppercase tracking-[0.1em] text-white/65">
+//               <p className="mt-1 text-[9px] uppercase tracking-widest text-white/65">
 //                 Apparel Styles
 //               </p>
 //             </div>
@@ -194,9 +194,9 @@ export default function Hero() {
         {/* Editorial image treatment */}
         <div className="absolute inset-0 bg-black/35" />
 
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/10" />
+        <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/35 to-black/10" />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-black/10" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/65 via-transparent to-black/10" />
       </div>
 
       {/* Content */}
@@ -205,7 +205,7 @@ export default function Hero() {
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
-          className="max-w-[900px]"
+          className="max-w-225"
         >
           <motion.p
             variants={revealUp}
@@ -216,7 +216,7 @@ export default function Hero() {
 
           <motion.h1
             variants={revealUp}
-            className="max-w-[900px] font-serif text-[48px] font-normal leading-[0.92] tracking-[-0.04em] text-white sm:text-[64px] md:text-[76px] lg:text-[92px] xl:text-[104px]"
+            className="max-w-225 font-serif text-[48px] font-normal leading-[0.92] tracking-[-0.04em] text-white sm:text-[64px] md:text-[76px] lg:text-[92px] xl:text-[104px]"
           >
             Quality apparel
             <br />
@@ -225,7 +225,7 @@ export default function Hero() {
 
           <motion.p
             variants={revealUp}
-            className="mt-7 max-w-[560px] text-[13px] leading-6 text-white/75 sm:text-[14px] sm:leading-7"
+            className="mt-7 max-w-140 text-[13px] leading-6 text-white/75 sm:text-[14px] sm:leading-7"
           >
             From carefully selected materials to custom branding and production,
             we create apparel around your specifications.
@@ -263,7 +263,7 @@ export default function Hero() {
               {loading ? "Loading" : settings?.siteName || "Verigo Essential"}
             </p>
 
-            <p className="mt-2 max-w-[500px] text-[12px] text-white/80 sm:text-[13px]">
+            <p className="mt-2 max-w-125 text-[12px] text-white/80 sm:text-[13px]">
               {settings?.tagline ||
                 "Premium apparel manufacturing for global brands."}
             </p>

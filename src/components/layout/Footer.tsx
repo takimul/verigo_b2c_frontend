@@ -12,6 +12,11 @@ import { revealUp, staggerContainer } from "@/lib/animations";
 
 export default function Footer() {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
+  const [year, setYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -85,7 +90,7 @@ export default function Footer() {
                 <img
                   src={settings.logoUrl}
                   alt={siteName}
-                  className="max-h-10 w-auto max-w-[190px] object-contain brightness-0 invert"
+                  className="max-h-10 w-auto max-w-47.5 object-contain brightness-0 invert"
                 />
               ) : (
                 <span className="font-serif text-[27px] tracking-[-0.04em] text-[#f7f5f0]">
@@ -94,7 +99,7 @@ export default function Footer() {
               )}
             </Link>
 
-            <p className="mt-5 max-w-[340px] text-[12px] leading-6 text-[#918b83]">
+            <p className="mt-5 max-w-85 text-[12px] leading-6 text-[#918b83]">
               {settings?.tagline ||
                 "Premium apparel manufacturing for brands with a vision."}
             </p>
@@ -254,7 +259,7 @@ export default function Footer() {
                 href={`https://wa.me/${settings.whatsapp.replace(/\D/g, "")}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-6 inline-flex items-center border border-[#4a4845] px-4 py-3 text-[9px] font-medium uppercase tracking-[0.1em] text-[#d8d2c9] transition-colors duration-300 hover:border-[#f7f5f0] hover:text-[#f7f5f0]"
+                className="mt-6 inline-flex items-center border border-[#4a4845] px-4 py-3 text-[9px] font-medium uppercase tracking-widest text-[#d8d2c9] transition-colors duration-300 hover:border-[#f7f5f0] hover:text-[#f7f5f0]"
               >
                 WhatsApp Us
               </a>
@@ -265,7 +270,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col gap-6 py-7 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[9px] uppercase tracking-[0.12em] text-[#6f6a63]">
-            © {new Date().getFullYear()} {siteName}. All rights reserved.
+            © {year ?? ""} {siteName}. All rights reserved.
           </p>
 
           <div className="flex items-center gap-5">

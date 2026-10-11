@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import ToastProvider from "@/components/ui/ToastProvider";
 import "./globals.css";
 import Footer from "@/components/layout/Footer";
+import { AdminAuthProvider } from "@/context/AdminAuthContext";
+import Navbar from "@/components/layout/Navbar";
 
 export const metadata: Metadata = {
   title: {
@@ -20,9 +22,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ToastProvider />
-
-        {children}
+        <Navbar />
+        <AdminAuthProvider>
+          {children}
+          <ToastProvider />
+        </AdminAuthProvider>
 
         <Footer />
       </body>

@@ -156,7 +156,7 @@ export default function CategoryShowcase() {
                         {category.name}
                       </h3>
 
-                      <div className="mt-3 flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.1em] text-white/85">
+                      <div className="mt-3 flex items-center gap-2 text-[10px] font-medium uppercase tracking-widest text-white/85">
                         <span>View Collection</span>
 
                         <ArrowUpRight

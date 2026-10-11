@@ -25,7 +25,7 @@ export default function InquiryBanner() {
             VE
           </div>
 
-          <div className="relative z-10 max-w-[900px]">
+          <div className="relative z-10 max-w-225">
             <motion.div variants={revealUp}>
               <div className="mb-6 flex items-center gap-3">
                 <span className="flex h-9 w-9 items-center justify-center border border-[#d2ccc2]">
@@ -93,7 +93,7 @@ export default function InquiryBanner() {
           {/* Bottom information */}
           <motion.div
             variants={revealUp}
-            className="relative z-10 mt-14 grid max-w-[900px] border-t border-[#d9d4cb] pt-6 sm:mt-16 sm:grid-cols-3"
+            className="relative z-10 mt-14 grid max-w-225 border-t border-[#d9d4cb] pt-6 sm:mt-16 sm:grid-cols-3"
           >
             <div className="pb-5 sm:pb-0 sm:pr-6">
               <p className="text-[9px] uppercase tracking-[0.18em] text-[#8a847b]">

@@ -137,14 +137,14 @@ export default function WhyVerigo() {
           viewport={{ once: true, amount: 0.2 }}
           className="mt-14 flex flex-col gap-7 border-t border-[#3a3937] pt-8 sm:mt-16 sm:flex-row sm:items-center sm:justify-between"
         >
-          <p className="max-w-[560px] text-[11px] leading-6 text-[#918b83]">
+          <p className="max-w-140 text-[11px] leading-6 text-[#918b83]">
             Looking for a manufacturing partner for your next collection?
             Let&apos;s talk about your requirements.
           </p>
 
           <Link
             href="/contact"
-            className="group inline-flex w-fit items-center gap-3 border border-[#777169] px-6 py-3.5 text-[10px] font-medium uppercase tracking-[0.1em] text-[#f7f5f0] transition-all duration-300 hover:border-[#f7f5f0] hover:bg-[#f7f5f0] hover:text-[#171717]"
+            className="group inline-flex w-fit items-center gap-3 border border-[#777169] px-6 py-3.5 text-[10px] font-medium uppercase tracking-widest text-[#f7f5f0] transition-all duration-300 hover:border-[#f7f5f0] hover:bg-[#f7f5f0] hover:text-[#171717]"
           >
             Talk to Our Team
             <ArrowRight

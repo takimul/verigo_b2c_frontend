@@ -293,7 +293,7 @@ export default function FeaturedProducts() {
           >
             <Link
               href="/products"
-              className="group inline-flex items-center gap-3 border border-[#222] px-6 py-3.5 text-[10px] font-medium uppercase tracking-[0.1em] text-[#171717] transition-colors duration-300 hover:bg-[#171717] hover:text-white"
+              className="group inline-flex items-center gap-3 border border-[#222] px-6 py-3.5 text-[10px] font-medium uppercase tracking-widest text-[#171717] transition-colors duration-300 hover:bg-[#171717] hover:text-white"
             >
               View All Products
               <ArrowRight

@@ -8,6 +8,11 @@ export interface Category {
   parent?: Category | null;
   children?: Category[];
   isActive: boolean;
+  sortOrder?: number;
+  _count?: {
+    products?: number;
+    children?: number;
+  };
   createdAt: string;
   updatedAt: string;
 }

@@ -152,7 +152,7 @@ export default function Navbar() {
               <Link
                 href="/contact"
                 onClick={() => setMobileOpen(false)}
-                className="mt-6 flex items-center justify-center gap-3 bg-[#111] px-5 py-4 text-[11px] font-medium uppercase tracking-[0.1em] text-white"
+                className="mt-6 flex items-center justify-center gap-3 bg-[#111] px-5 py-4 text-[11px] font-medium uppercase tracking-widest text-white"
               >
                 Send Inquiry
                 <ArrowUpRight size={14} />

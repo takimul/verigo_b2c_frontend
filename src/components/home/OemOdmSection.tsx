@@ -178,7 +178,7 @@ export default function OemOdmSection() {
 
           <Link
             href="/contact"
-            className="group mt-6 inline-flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.1em] text-[#171717] sm:mt-0"
+            className="group mt-6 inline-flex items-center gap-3 text-[10px] font-medium uppercase tracking-widest text-[#171717] sm:mt-0"
           >
             Discuss Your Requirements
             <ArrowRight
