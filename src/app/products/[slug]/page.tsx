@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -18,7 +18,7 @@ import { getProductBySlug } from "@/services/products";
 import type { Product } from "@/types/product";
 import InquiryForm from "@/components/inquiries/InquiryForm";
 
-function ProductDetailsPage() {
+function ProductDetailsContent() {
   const params = useParams<{ slug: string }>();
   const slug = params.slug;
 
@@ -506,4 +506,21 @@ function ProductDetailsPage() {
   );
 }
 
-export default ProductDetailsPage;
+export default function ProductDetailsPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="flex min-h-[60vh] items-center justify-center bg-white">
+          <div className="flex flex-col items-center gap-3">
+            <LoaderCircle size={30} className="animate-spin text-neutral-700" />
+            <p className="text-sm text-neutral-500">
+              Loading product details...
+            </p>
+          </div>
+        </main>
+      }
+    >
+      <ProductDetailsContent />
+    </Suspense>
+  );
+}

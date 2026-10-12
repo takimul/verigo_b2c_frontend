@@ -84,10 +84,8 @@ export default function AdminShell({ children }: { children: ReactNode }) {
     );
   }
 
-  if (!isAuthenticated || !admin) {
-    return (
-      <RedirectToLogin onRedirect={() => router.replace("/admin/login")} />
-    );
+  if (!admin) {
+    return <AdminLoginRedirect />;
   }
 
   return (
@@ -269,10 +267,12 @@ export default function AdminShell({ children }: { children: ReactNode }) {
   );
 }
 
-function RedirectToLogin({ onRedirect }: { onRedirect: () => void }) {
+function AdminLoginRedirect() {
+  const router = useRouter();
+
   useEffect(() => {
-    onRedirect();
-  }, [onRedirect]);
+    router.replace("/admin/login");
+  }, [router]);
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#f7f5f0]">
