@@ -1,21 +1,31 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Eye, EyeOff, LoaderCircle, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { useAdminAuth } from "@/context/AdminAuthContext";
 
 export default function AdminLoginPage() {
-  const { login } = useAdminAuth();
+  const router = useRouter();
+  const { login, isLoading, isAuthenticated } = useAdminAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace("/admin/dashboard");
+    }
+  }, [isLoading, isAuthenticated, router]);
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isSubmitting) return;
 
     if (!email.trim() || !password) {
       toast.error("Please enter your email and password.");
@@ -25,7 +35,11 @@ export default function AdminLoginPage() {
     setIsSubmitting(true);
 
     try {
-      await login({ email: email.trim(), password });
+      await login({
+        email: email.trim(),
+        password,
+      });
+
       toast.success("Welcome to Verigo Essential.");
     } catch (error) {
       toast.error(
@@ -36,6 +50,21 @@ export default function AdminLoginPage() {
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  if (isLoading || isAuthenticated) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#f7f5f0] px-5 text-[#171717]">
+        <div className="text-center">
+          <LoaderCircle size={22} className="mx-auto mb-4 animate-spin" />
+          <p className="text-sm text-[#777168]">
+            {isLoading
+              ? "Checking administrator session..."
+              : "Opening dashboard..."}
+          </p>
+        </div>
+      </main>
+    );
   }
 
   return (
@@ -69,6 +98,7 @@ export default function AdminLoginPage() {
               <label htmlFor="email" className="mb-2 block text-sm font-medium">
                 Email address
               </label>
+
               <input
                 id="email"
                 type="email"

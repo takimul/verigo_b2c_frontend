@@ -115,11 +115,24 @@ export async function updateProduct(
   id: string,
   payload: Partial<ProductInput>,
 ): Promise<ApiResponse<Product>> {
-  const response = await api.patch<ApiResponse<Product>>(
-    `/products/${encodeURIComponent(id)}`,
-    payload,
-  );
-  return response.data;
+  const productId = id.trim();
+
+  if (!productId) {
+    throw new Error("Product ID is required to update a product.");
+  }
+
+  try {
+    const response = await api.patch<ApiResponse<Product>>(
+      `/products/${encodeURIComponent(productId)}`,
+      payload,
+    );
+
+    return response.data;
+  } catch (error) {
+    throw error instanceof Error
+      ? error
+      : new Error("Failed to update product. Please try again.");
+  }
 }
 
 export async function archiveProduct(
