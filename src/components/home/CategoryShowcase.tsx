@@ -130,7 +130,7 @@ export default function CategoryShowcase() {
                 className="group"
               >
                 <Link
-                  href={`/categories/${category.slug}`}
+                  href={`/categories/products?categoryId=${encodeURIComponent(category.id)}`}
                   className="relative block aspect-[1.35/1] overflow-hidden bg-[#e8e2d8] sm:aspect-[1.25/1] lg:aspect-[1.22/1]"
                 >
                   {category.imageUrl ? (
