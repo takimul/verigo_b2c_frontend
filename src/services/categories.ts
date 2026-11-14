@@ -54,9 +54,19 @@ export async function updateCategory(
 
 export async function deleteCategory(
   id: string,
+  options?: { reassignToId?: string; cascade?: boolean },
 ): Promise<ApiResponse<unknown>> {
+  const params = new URLSearchParams();
+  if (options?.reassignToId) {
+    params.set("reassignToId", options.reassignToId);
+  }
+  if (options?.cascade) {
+    params.set("cascade", "true");
+  }
+  const query = params.toString() ? `?${params.toString()}` : "";
+
   const response = await api.delete<ApiResponse<unknown>>(
-    `/categories/${encodeURIComponent(id)}`,
+    `/categories/${encodeURIComponent(id)}${query}`,
   );
   return response.data;
 }

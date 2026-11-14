@@ -1,62 +1,42 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowRight,
-  Check,
-  Package,
-  Palette,
-  PenTool,
-  Shirt,
-  Tags,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { motion } from "motion/react";
 
 import { revealUp, staggerContainer } from "@/lib/animations";
+import InlineEditable from "@/components/ui/InlineEditable";
 
-const capabilities = [
+const customizationItems = [
   {
     title: "Custom Fabric",
-    description:
-      "Develop fabric specifications tailored to your product requirements.",
-    icon: Shirt,
+    description: "Fabric and GSM matched to your specification.",
   },
   {
     title: "Custom Color",
-    description:
-      "Match your brand identity with customized colors and fabric tones.",
-    icon: Palette,
+    description: "Colors matched to your brand.",
   },
   {
     title: "Custom Printing",
-    description:
-      "Create branded garments with your preferred printing techniques.",
-    icon: PenTool,
+    description: "Your artwork, printed to order.",
   },
   {
     title: "Custom Embroidery",
-    description:
-      "Add refined embroidered branding, artwork and details to your garments.",
-    icon: Sparkles,
+    description: "Embroidered logos and details.",
   },
   {
     title: "Custom Neck Label",
-    description:
-      "Build a consistent branded experience with customized neck labels.",
-    icon: Tags,
+    description: "Your brand label on every piece.",
   },
   {
     title: "Custom Packaging",
-    description:
-      "Complete your brand presentation with packaging designed around your needs.",
-    icon: Package,
+    description: "Branded bags, tags and packaging.",
   },
 ];
 
 export default function OemOdmSection() {
   return (
-    <section className="overflow-hidden bg-[#f7f5f0] px-5 py-20 sm:px-8 sm:py-24 lg:px-12 lg:py-32">
+    <section className="overflow-hidden bg-[#f7f5f0] px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-24">
       <div className="mx-auto max-w-[1600px]">
         {/* Intro */}
         <motion.div
@@ -64,42 +44,46 @@ export default function OemOdmSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
-          className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end"
+          className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end"
         >
           <div>
-            <motion.p
-              variants={revealUp}
-              className="mb-4 text-[9px] font-medium uppercase tracking-[0.38em] text-[#756e64] sm:text-[10px]"
-            >
-              OEM / ODM
-            </motion.p>
+            <motion.div variants={revealUp}>
+              <InlineEditable
+                contentKey="custom_dev_badge"
+                defaultValue="CUSTOM DEVELOPMENT"
+                as="p"
+                className="mb-3 text-[9px] font-medium uppercase tracking-[0.38em] text-[#756e64] sm:text-[10px]"
+              />
+            </motion.div>
 
-            <motion.h2
-              variants={revealUp}
-              className="max-w-[700px] font-serif text-[42px] font-normal leading-[0.98] tracking-[-0.03em] text-[#171717] sm:text-[54px] lg:text-[68px]"
-            >
-              Your vision.
-              <br />
-              Our expertise.
-            </motion.h2>
+            <motion.div variants={revealUp}>
+              <InlineEditable
+                contentKey="custom_dev_headline"
+                defaultValue="Your vision. Our expertise."
+                as="h2"
+                multiline
+                className="max-w-[700px] font-serif text-[40px] font-normal leading-[1] tracking-[-0.03em] text-[#171717] sm:text-[50px] lg:text-[62px]"
+              />
+            </motion.div>
           </div>
 
           <motion.div
             variants={revealUp}
             className="max-w-[650px] lg:justify-self-end"
           >
-            <p className="text-[14px] leading-7 text-[#5f5a53] sm:text-[15px] sm:leading-8">
-              From concept to finished garment, we help brands develop apparel
-              tailored to their specifications. Our manufacturing capabilities
-              allow you to customize the details that make your collection
-              uniquely yours.
-            </p>
+            <InlineEditable
+              contentKey="custom_dev_description"
+              defaultValue="From concept to finished garment, we help brands develop apparel tailored to their specifications. Together with our partner factories, we help you customize the details that make your collection uniquely yours."
+              as="p"
+              multiline
+              className="text-[13px] leading-7 text-[#5f5a53] sm:text-[14px] sm:leading-8"
+            />
 
             <Link
               href="/contact"
-              className="group mt-7 inline-flex items-center gap-3 border-b border-[#292929] pb-2 text-[10px] font-medium uppercase tracking-[0.12em] text-[#171717]"
+              className="group mt-6 inline-flex items-center gap-3 border-b border-[#292929] pb-1.5 text-[10px] font-medium uppercase tracking-[0.12em] text-[#171717]"
             >
-              Start Your Project
+              START YOUR PROJECT
               <ArrowRight
                 size={14}
                 strokeWidth={1.4}
@@ -109,84 +93,64 @@ export default function OemOdmSection() {
           </motion.div>
         </motion.div>
 
-        {/* Capability grid */}
+        {/* Short one-line list of custom options */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.12 }}
-          className="mt-16 grid border-t border-[#d9d4cb] sm:mt-20 sm:grid-cols-2 lg:grid-cols-3"
+          className="mt-12 grid border-t border-[#d9d4cb] sm:grid-cols-2 lg:grid-cols-3"
         >
-          {capabilities.map((capability, index) => {
-            const Icon = capability.icon;
+          {customizationItems.map((item, index) => (
+            <motion.div
+              key={item.title}
+              variants={revealUp}
+              className={[
+                "flex items-start gap-3.5 border-b border-[#d9d4cb] py-5 sm:px-6",
+                index % 2 === 0 ? "sm:border-r" : "",
+                index % 3 !== 2 ? "lg:border-r" : "",
+                "lg:py-6",
+              ].join(" ")}
+            >
+              <div className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#171717] text-white">
+                <Check size={11} strokeWidth={2.5} />
+              </div>
 
-            return (
-              <motion.article
-                key={capability.title}
-                variants={revealUp}
-                className={[
-                  "group relative border-b border-[#d9d4cb] py-8 sm:px-7",
-                  index % 2 === 0 ? "sm:border-r" : "",
-                  index % 3 !== 2 ? "lg:border-r" : "",
-                  "lg:px-8 lg:py-10",
-                ].join(" ")}
-              >
-                <div className="flex items-start justify-between gap-6">
-                  <div className="flex h-10 w-10 items-center justify-center border border-[#d5d0c7] transition-colors duration-300 group-hover:border-[#171717]">
-                    <Icon
-                      size={17}
-                      strokeWidth={1.2}
-                      className="text-[#35322e]"
-                    />
-                  </div>
-
-                  <span className="text-[9px] tracking-[0.15em] text-[#aaa39a]">
-                    0{index + 1}
-                  </span>
-                </div>
-
-                <h3 className="mt-8 text-[15px] font-medium tracking-[-0.01em] text-[#171717]">
-                  {capability.title}
+              <div>
+                <h3 className="text-[13px] font-medium text-[#171717]">
+                  {item.title}
                 </h3>
-
-                <p className="mt-3 max-w-[360px] text-[11px] leading-6 text-[#777169]">
-                  {capability.description}
+                <p className="mt-1 text-[11px] leading-5 text-[#777169]">
+                  {item.description}
                 </p>
-
-                <div className="mt-6 flex items-center gap-2 text-[9px] uppercase tracking-[0.12em] text-[#817a70]">
-                  <Check size={12} strokeWidth={1.5} />
-                  Available for custom development
-                </div>
-              </motion.article>
-            );
-          })}
+              </div>
+            </motion.div>
+          ))}
         </motion.div>
 
-        {/* Bottom statement */}
+        {/* Small note */}
+        <motion.p
+          variants={revealUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          className="mt-6 text-[11px] italic text-[#8a847b]"
+        >
+          All customization is subject to order quantity and factory confirmation.
+        </motion.p>
+
+        {/* Bottom paragraph (without Discuss Your Requirements button) */}
         <motion.div
           variants={revealUp}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
-          className="mt-14 border-t border-[#d9d4cb] pt-8 sm:mt-16 sm:flex sm:items-center sm:justify-between"
+          className="mt-10 border-t border-[#d9d4cb] pt-6"
         >
-          <p className="max-w-[650px] text-[11px] leading-6 text-[#777169]">
-            Whether you are developing a new collection or scaling an existing
-            one, our team works around your specifications, branding and
-            production requirements.
+          <p className="max-w-[780px] text-[12px] leading-6 text-[#68635c] sm:text-[13px]">
+            Developing a new collection or scaling an existing one? Tell us what
+            you need and we will coordinate it with our partner factories.
           </p>
-
-          <Link
-            href="/contact"
-            className="group mt-6 inline-flex items-center gap-3 text-[10px] font-medium uppercase tracking-widest text-[#171717] sm:mt-0"
-          >
-            Discuss Your Requirements
-            <ArrowRight
-              size={14}
-              strokeWidth={1.4}
-              className="transition-transform duration-300 group-hover:translate-x-1"
-            />
-          </Link>
         </motion.div>
       </div>
     </section>

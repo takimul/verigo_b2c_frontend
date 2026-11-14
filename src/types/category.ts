@@ -7,6 +7,12 @@ export interface Category {
   parentId: string | null;
   parent?: Category | null;
   children?: Category[];
+  products?: Array<{
+    id: string;
+    name: string;
+    slug: string;
+    status?: string;
+  }>;
   isActive: boolean;
   sortOrder?: number;
   _count?: {

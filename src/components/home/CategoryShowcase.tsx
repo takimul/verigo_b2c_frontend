@@ -1,23 +1,3 @@
-// const categories = [
-//   {
-//     name: "Men",
-//     href: "/categories/men",
-//     image:
-//       "https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=1400&q=85",
-//   },
-//   {
-//     name: "Women",
-//     href: "/categories/women",
-//     image:
-//       "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=1400&q=85",
-//   },
-//   {
-//     name: "Kids",
-//     href: "/categories/kids",
-//     image:
-//       "https://images.unsplash.com/photo-1503919545889-aef636e10ad4?auto=format&fit=crop&w=1400&q=85",
-//   },
-// ];
 "use client";
 
 import Link from "next/link";
@@ -40,8 +20,14 @@ export default function CategoryShowcase() {
       try {
         const response = await getCategories();
 
-        if (mounted) {
-          setCategories(response.data);
+        if (mounted && response.success) {
+          // Top-level categories or active categories
+          const active = (response.data || []).filter(
+            (category) => category.isActive,
+          );
+          // Sort categories by sortOrder
+          active.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+          setCategories(active);
         }
       } catch (error) {
         console.error("Failed to load categories:", error);
@@ -64,7 +50,10 @@ export default function CategoryShowcase() {
   }
 
   return (
-    <section className="bg-[#f7f5f0] px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-24">
+    <section
+      id="categories"
+      className="bg-[#f7f5f0] px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-24"
+    >
       <div className="mx-auto max-w-[1600px]">
         {/* Heading */}
         <motion.div
@@ -130,7 +119,7 @@ export default function CategoryShowcase() {
                 className="group"
               >
                 <Link
-                  href={`/products?categoryId=${encodeURIComponent(category.id)}`}
+                  href={`/categories/${category.slug}`}
                   className="relative block aspect-[1.35/1] overflow-hidden bg-[#e8e2d8] sm:aspect-[1.25/1] lg:aspect-[1.22/1]"
                 >
                   {category.imageUrl ? (
@@ -148,7 +137,7 @@ export default function CategoryShowcase() {
                     <div className="absolute inset-0 bg-[#ddd6cb]" />
                   )}
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent opacity-80 transition-opacity duration-500 group-hover:opacity-90" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-80 transition-opacity duration-500 group-hover:opacity-90" />
 
                   <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-5 sm:p-6 lg:p-7">
                     <div>

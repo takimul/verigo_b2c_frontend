@@ -274,7 +274,9 @@ export default function AdminProductsPage() {
             <option value="">All categories</option>
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
-                {category.name}
+                {category.parent
+                  ? `${category.parent.name} → ${category.name}`
+                  : `${category.name} (Top-Level)`}
               </option>
             ))}
           </select>

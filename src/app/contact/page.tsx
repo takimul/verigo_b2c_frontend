@@ -14,6 +14,7 @@ import {
 
 import { getPublicSettings } from "@/services/settings";
 import type { SiteSettings } from "@/types/settings";
+import InlineEditable from "@/components/ui/InlineEditable";
 
 function whatsappUrl(value: string) {
   const number = value.replace(/[^\d]/g, "");
@@ -25,7 +26,6 @@ function socialLinks(settings: SiteSettings) {
     { label: "Instagram", url: settings.instagram },
     { label: "Facebook", url: settings.facebook },
     { label: "LinkedIn", url: settings.linkedin },
-    { label: "YouTube", url: settings.youtube },
   ].filter((item): item is { label: string; url: string } =>
     Boolean(item.url?.trim()),
   );
@@ -45,8 +45,6 @@ export default function ContactPage() {
         setError("");
 
         const response = await getPublicSettings();
-
-        console.log("Public settings API response:", response);
 
         if (!response.success) {
           throw new Error(response.message || "Failed to load settings.");
@@ -72,7 +70,7 @@ export default function ContactPage() {
       }
     }
 
-    void loadSettings();
+    loadSettings();
 
     return () => {
       cancelled = true;
@@ -86,23 +84,32 @@ export default function ContactPage() {
     <main className="min-h-screen bg-white text-neutral-950">
       <section className="border-b border-neutral-200">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-neutral-500">
-            Get in touch
-          </p>
+          <InlineEditable
+            contentKey="contact_badge"
+            defaultValue="Get in touch"
+            as="p"
+            className="text-xs font-semibold uppercase tracking-[0.22em] text-neutral-500"
+          />
 
-          <h1 className="mt-5 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
-            Let&apos;s discuss your requirements.
-          </h1>
+          <InlineEditable
+            contentKey="contact_headline"
+            defaultValue="Request a quote."
+            as="h1"
+            className="mt-5 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl"
+          />
 
-          <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-600 sm:text-base">
-            Contact us about wholesale products, bulk orders, customization, or
-            an OEM/ODM project. Tell us what you need and we&apos;ll have a
-            clear starting point for the conversation.
-          </p>
+          <InlineEditable
+            contentKey="contact_description"
+            defaultValue="Tell us about your products, quantities and branding requirements. We will find the right factory and send you a quote."
+            as="p"
+            multiline
+            className="mt-5 max-w-2xl text-sm leading-7 text-neutral-600 sm:text-base"
+          />
         </div>
       </section>
 
       <section className="mx-auto grid max-w-7xl gap-10 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+        {/* Contact details */}
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">
             Contact information
@@ -244,32 +251,33 @@ export default function ContactPage() {
           )}
         </div>
 
-        <div className="border border-neutral-200 p-6 sm:p-8 lg:p-10">
+        {/* Bottom box */}
+        <div className="border border-neutral-200 bg-neutral-50 p-6 sm:p-8 lg:p-10">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">
-            Wholesale &amp; business inquiries
+            Wholesale &amp; Sourcing Inquiries
           </p>
 
           <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
-            Tell us about your project.
+            Tell us what you need.
           </h2>
 
           <p className="mt-4 text-sm leading-7 text-neutral-600">
-            Include the product name, estimated quantity, sizes, colors, and
-            customization requirements. For OEM/ODM projects, include your
-            specifications and intended branding.
+            Include the product name, estimated quantity, sizes, colors and any
+            customization requirements. If you have your own design or
+            specifications, include those too.
           </p>
 
           <div className="mt-7 border-t border-neutral-200 pt-6">
             <Link
               href="/inquiry"
-              className="inline-flex w-full items-center justify-center gap-2 bg-neutral-950 px-5 py-3.5 text-sm font-medium text-white hover:bg-neutral-800 sm:w-auto"
+              className="inline-flex w-full items-center justify-center gap-2 bg-neutral-950 px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-white hover:bg-neutral-800 sm:w-auto"
             >
-              Open inquiry form <ArrowRight size={16} />
+              REQUEST A QUOTE <ArrowRight size={15} />
             </Link>
 
             <p className="mt-4 text-xs leading-5 text-neutral-500">
-              Submit your contact details and requirements through our business
-              inquiry form.
+              Share your contact details and requirements, and we will get back
+              to you with a quote.
             </p>
           </div>
         </div>

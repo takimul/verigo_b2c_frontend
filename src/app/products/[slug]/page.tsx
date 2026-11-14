@@ -107,11 +107,11 @@ function ProductDetailsContent() {
             </button>
 
             <Link
-              href="/"
+              href="/categories"
               className="inline-flex items-center justify-center gap-2 bg-neutral-950 px-4 py-2.5 text-sm font-medium text-white hover:bg-neutral-800"
             >
               <ArrowLeft size={15} />
-              Back to home
+              Back to categories
             </Link>
           </div>
         </div>
@@ -162,9 +162,21 @@ function ProductDetailsContent() {
 
             <span>/</span>
 
-            <Link href="/products" className="hover:text-neutral-950">
-              Products
+            <Link href="/categories" className="hover:text-neutral-950">
+              Categories
             </Link>
+
+            {product.category && (
+              <>
+                <span>/</span>
+                <Link
+                  href={`/categories/${product.category.slug || ""}`}
+                  className="hover:text-neutral-950"
+                >
+                  {product.category.name}
+                </Link>
+              </>
+            )}
 
             <span>/</span>
 
@@ -347,9 +359,9 @@ function ProductDetailsContent() {
             <button
               type="button"
               onClick={scrollToInquiry}
-              className="inline-flex items-center justify-center gap-2 bg-neutral-950 px-5 py-3.5 text-sm font-medium text-white transition hover:bg-neutral-800"
+              className="inline-flex items-center justify-center gap-2 bg-neutral-950 px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-neutral-800"
             >
-              Request a wholesale quote
+              REQUEST A QUOTE
               <ArrowRight size={16} />
             </button>
 

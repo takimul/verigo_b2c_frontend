@@ -1,48 +1,3 @@
-// const products = [
-//   {
-//     id: 1,
-//     name: "Essential Oversized Tee",
-//     category: "T-Shirts",
-//     image:
-//       "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1000&q=85",
-//   },
-//   {
-//     id: 2,
-//     name: "Premium Cotton Shirt",
-//     category: "Shirts",
-//     image:
-//       "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=1000&q=85",
-//   },
-//   {
-//     id: 3,
-//     name: "Relaxed Polo",
-//     category: "Polos",
-//     image:
-//       "https://images.unsplash.com/photo-1625910513413-5fc45c4b4f0d?auto=format&fit=crop&w=1000&q=85",
-//   },
-//   {
-//     id: 4,
-//     name: "Minimal Hoodie",
-//     category: "Hoodies",
-//     image:
-//       "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=1000&q=85",
-//   },
-//   {
-//     id: 5,
-//     name: "Everyday Trousers",
-//     category: "Bottoms",
-//     image:
-//       "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=1000&q=85",
-//   },
-//   {
-//     id: 6,
-//     name: "Kids Essential Set",
-//     category: "Kids",
-//     image:
-//       "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?auto=format&fit=crop&w=1000&q=85",
-//   },
-// ];
-
 "use client";
 
 import Link from "next/link";
@@ -74,9 +29,11 @@ export default function FeaturedProducts() {
 
         if (!mounted) return;
 
-        setProducts(response.data.items ?? []);
-      } catch (error) {
-        console.error("Failed to load featured products:", error);
+        // Keep exactly 4 products (best sellers with good photos)
+        const items = response.data.items ?? [];
+        setProducts(items.slice(0, 4));
+      } catch (err) {
+        console.error("Failed to load featured products:", err);
 
         if (mounted) {
           setError(true);
@@ -96,18 +53,10 @@ export default function FeaturedProducts() {
     };
   }, []);
 
-  /*
-   * If the API failed, don't leave a large broken
-   * section on the homepage.
-   */
   if (error) {
     return null;
   }
 
-  /*
-   * If there are no featured products configured
-   * in the admin panel, don't show an empty section.
-   */
   if (!loading && products.length === 0) {
     return null;
   }
@@ -115,9 +64,7 @@ export default function FeaturedProducts() {
   return (
     <section className="overflow-hidden bg-[#eeebe4] px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-24">
       <div className="mx-auto max-w-[1600px]">
-        {/* ------------------------------------------------
-            SECTION HEADER
-        ------------------------------------------------- */}
+        {/* Section Header */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"
@@ -146,7 +93,7 @@ export default function FeaturedProducts() {
 
           <motion.div variants={revealUp}>
             <Link
-              href="/products"
+              href="/categories"
               className="group inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.07em] text-[#222]"
             >
               Explore All Products
@@ -159,12 +106,10 @@ export default function FeaturedProducts() {
           </motion.div>
         </motion.div>
 
-        {/* ------------------------------------------------
-            LOADING STATE
-        ------------------------------------------------- */}
+        {/* Loading State */}
         {loading ? (
-          <div className="grid grid-cols-2 gap-x-3 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
-            {Array.from({ length: 8 }).map((_, index) => (
+          <div className="grid grid-cols-2 gap-x-3 gap-y-10 md:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, index) => (
               <div key={index} className="min-w-0">
                 <div className="aspect-[0.78/1] animate-pulse bg-[#ddd7cd]" />
 
@@ -179,9 +124,7 @@ export default function FeaturedProducts() {
             ))}
           </div>
         ) : (
-          /* ------------------------------------------------
-              PRODUCTS
-          ------------------------------------------------- */
+          /* Products Grid - Exactly 4 */
           <motion.div
             variants={staggerContainer}
             initial="hidden"
@@ -190,7 +133,7 @@ export default function FeaturedProducts() {
               once: true,
               amount: 0.1,
             }}
-            className="grid grid-cols-2 gap-x-3 gap-y-10 md:grid-cols-3 lg:grid-cols-4"
+            className="grid grid-cols-2 gap-x-3 gap-y-10 md:grid-cols-4"
           >
             {products.map((product) => {
               const primaryImage =
@@ -205,9 +148,7 @@ export default function FeaturedProducts() {
                   className="group min-w-0"
                 >
                   <Link href={`/products/${product.slug}`} className="block">
-                    {/* ----------------------------------------
-                        PRODUCT IMAGE
-                    ----------------------------------------- */}
+                    {/* Product Image */}
                     <div className="relative aspect-[0.78/1] overflow-hidden bg-[#ded8ce]">
                       {primaryImage ? (
                         <motion.img
@@ -231,14 +172,10 @@ export default function FeaturedProducts() {
                         </div>
                       )}
 
-                      {/* ----------------------------------------
-                          SUBTLE HOVER OVERLAY
-                      ----------------------------------------- */}
+                      {/* Subtle hover overlay */}
                       <div className="absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/5" />
 
-                      {/* ----------------------------------------
-                          VIEW DETAILS
-                      ----------------------------------------- */}
+                      {/* View Details */}
                       <div className="absolute bottom-4 left-4 right-4 translate-y-3 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
                         <div className="flex items-center justify-between bg-white/95 px-4 py-3 backdrop-blur-sm">
                           <span className="text-[9px] font-medium uppercase tracking-[0.08em] text-[#171717]">
@@ -254,9 +191,7 @@ export default function FeaturedProducts() {
                       </div>
                     </div>
 
-                    {/* ----------------------------------------
-                        PRODUCT INFORMATION
-                    ----------------------------------------- */}
+                    {/* Product Information */}
                     <div className="pt-4">
                       <p className="text-[9px] uppercase tracking-[0.14em] text-[#817a70]">
                         {product.category?.name ?? "Apparel"}
@@ -277,9 +212,7 @@ export default function FeaturedProducts() {
           </motion.div>
         )}
 
-        {/* ------------------------------------------------
-            MOBILE CTA
-        ------------------------------------------------- */}
+        {/* Mobile CTA */}
         {!loading && products.length > 0 && (
           <motion.div
             variants={revealUp}
@@ -292,10 +225,10 @@ export default function FeaturedProducts() {
             className="mt-10 flex justify-center md:hidden"
           >
             <Link
-              href="/products"
+              href="/categories"
               className="group inline-flex items-center gap-3 border border-[#222] px-6 py-3.5 text-[10px] font-medium uppercase tracking-widest text-[#171717] transition-colors duration-300 hover:bg-[#171717] hover:text-white"
             >
-              View All Products
+              Explore All Products
               <ArrowRight
                 size={14}
                 strokeWidth={1.4}

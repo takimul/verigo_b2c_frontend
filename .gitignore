@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Client admin guide deliverables
+generate_admin_guide.js
+Verigo_Essential_Admin_Guide.html
+Verigo_Essential_Admin_Guide.pdf
+

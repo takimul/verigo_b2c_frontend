@@ -27,7 +27,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import AdminShell from "@/components/admin/AdminShell";
 import {
   deleteBannerImage,
   deleteLogo,
