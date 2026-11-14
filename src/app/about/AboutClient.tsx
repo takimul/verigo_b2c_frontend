@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, MessageSquare, ShieldCheck } from "lucide-react";
 import InlineEditable from "@/components/ui/InlineEditable";
+import EmployeeSection from "@/components/about/EmployeeSection";
 
 const howWeWorkCards = [
   {
@@ -61,6 +62,9 @@ export default function AboutClient() {
           </Link>
         </div>
       </section>
+
+      {/* Employee / Client Leadership Section */}
+      <EmployeeSection />
 
       {/* How we work */}
       <section className="border-b border-neutral-200 bg-neutral-50">

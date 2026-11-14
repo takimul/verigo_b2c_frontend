@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import { ImagePlus, LoaderCircle, Star, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 import type { Product, ProductImage } from "@/types/product";
 import {
   deleteProductImage,
@@ -23,6 +24,7 @@ export default function ProductImageManager({
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [busyImageId, setBusyImageId] = useState<string | null>(null);
+  const [imageToDelete, setImageToDelete] = useState<ProductImage | null>(null);
 
   async function handleUpload(files: FileList | null) {
     if (!files?.length) return;
@@ -69,11 +71,13 @@ export default function ProductImageManager({
     }
   }
 
-  async function handleDelete(image: ProductImage) {
-    const confirmed = window.confirm(
-      "Delete this product image? This action cannot be undone.",
-    );
-    if (!confirmed) return;
+  function handleDelete(image: ProductImage) {
+    setImageToDelete(image);
+  }
+
+  async function confirmDeleteImage() {
+    if (!imageToDelete) return;
+    const image = imageToDelete;
 
     setBusyImageId(image.id);
     try {
@@ -85,6 +89,7 @@ export default function ProductImageManager({
       toast.error("Could not delete the image.");
     } finally {
       setBusyImageId(null);
+      setImageToDelete(null);
     }
   }
 
@@ -194,6 +199,17 @@ export default function ProductImageManager({
           ))}
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!imageToDelete}
+        title="Delete product image?"
+        description="Are you sure you want to remove this product image? This action cannot be undone."
+        confirmText="Delete Image"
+        variant="danger"
+        busy={busyImageId === imageToDelete?.id}
+        onConfirm={() => void confirmDeleteImage()}
+        onCancel={() => setImageToDelete(null)}
+      />
     </section>
   );
 }

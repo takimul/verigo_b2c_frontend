@@ -8,7 +8,6 @@ import {
   ArrowLeft,
   ArrowRight,
   Check,
-  LoaderCircle,
   Package,
   RefreshCw,
   ShieldCheck,
@@ -17,6 +16,7 @@ import {
 import { getProductBySlug } from "@/services/products";
 import type { Product } from "@/types/product";
 import InquiryForm from "@/components/inquiries/InquiryForm";
+import { ProductDetailSkeleton } from "@/components/ui/Skeletons";
 
 function ProductDetailsContent() {
   const params = useParams<{ slug: string }>();
@@ -68,14 +68,7 @@ function ProductDetailsContent() {
   }
 
   if (loading) {
-    return (
-      <main className="flex min-h-[60vh] items-center justify-center bg-white">
-        <div className="flex flex-col items-center gap-3">
-          <LoaderCircle size={30} className="animate-spin text-neutral-700" />
-          <p className="text-sm text-neutral-500">Loading product details...</p>
-        </div>
-      </main>
-    );
+    return <ProductDetailSkeleton />;
   }
 
   if (error || !product) {
@@ -520,18 +513,7 @@ function ProductDetailsContent() {
 
 export default function ProductDetailsPage() {
   return (
-    <Suspense
-      fallback={
-        <main className="flex min-h-[60vh] items-center justify-center bg-white">
-          <div className="flex flex-col items-center gap-3">
-            <LoaderCircle size={30} className="animate-spin text-neutral-700" />
-            <p className="text-sm text-neutral-500">
-              Loading product details...
-            </p>
-          </div>
-        </main>
-      }
-    >
+    <Suspense fallback={<ProductDetailSkeleton />}>
       <ProductDetailsContent />
     </Suspense>
   );

@@ -55,13 +55,14 @@ export default function AdminLoginPage() {
   if (isLoading || isAuthenticated) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#f7f5f0] px-5 text-[#171717]">
-        <div className="text-center">
-          <LoaderCircle size={22} className="mx-auto mb-4 animate-spin" />
-          <p className="text-sm text-[#777168]">
-            {isLoading
-              ? "Checking administrator session..."
-              : "Opening dashboard..."}
-          </p>
+        <div className="w-full max-w-md border border-black/10 bg-white p-8 shadow-xs animate-pulse">
+          <div className="mx-auto h-8 w-36 rounded bg-neutral-200" />
+          <div className="mx-auto mt-2 h-3.5 w-48 rounded bg-neutral-200" />
+          <div className="mt-8 space-y-4">
+            <div className="h-10 rounded bg-neutral-100" />
+            <div className="h-10 rounded bg-neutral-100" />
+            <div className="h-11 rounded bg-neutral-900/10" />
+          </div>
         </div>
       </main>
     );

@@ -902,20 +902,35 @@ export default function AdminCategoriesPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-100">
-              {loading && (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="py-16 text-center text-neutral-500"
-                  >
-                    <LoaderCircle
-                      size={22}
-                      className="mx-auto animate-spin mb-2"
-                    />
-                    Loading categories...
-                  </td>
-                </tr>
-              )}
+              {loading &&
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i} className="animate-pulse border-b border-neutral-100">
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="size-10 rounded-xs bg-neutral-200" />
+                        <div className="space-y-1.5">
+                          <div className="h-4 w-36 rounded-xs bg-neutral-200" />
+                          <div className="h-2.5 w-20 rounded-xs bg-neutral-200" />
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="h-3.5 w-32 rounded-xs bg-neutral-200" />
+                    </td>
+                    <td className="px-4 py-4 text-center">
+                      <div className="mx-auto h-5 w-8 rounded-xs bg-neutral-200" />
+                    </td>
+                    <td className="px-4 py-4 text-center">
+                      <div className="mx-auto h-3.5 w-6 rounded-xs bg-neutral-200" />
+                    </td>
+                    <td className="px-4 py-4 text-center">
+                      <div className="mx-auto h-5 w-16 rounded-xs bg-neutral-200" />
+                    </td>
+                    <td className="px-4 py-4 text-right">
+                      <div className="ml-auto h-8 w-28 rounded-xs bg-neutral-200" />
+                    </td>
+                  </tr>
+                ))}
 
               {!loading && filteredCategories.length === 0 && (
                 <tr>

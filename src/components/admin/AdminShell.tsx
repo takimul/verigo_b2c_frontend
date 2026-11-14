@@ -91,11 +91,59 @@ export default function AdminShell({ children }: { children: ReactNode }) {
 
   if (isLoading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#f7f5f0]">
-        <p className="text-sm text-[#777168]">
-          Checking administrator session...
-        </p>
-      </main>
+      <div className="min-h-screen bg-[#f7f5f0] text-[#171717] animate-pulse">
+        {/* Top Header Skeleton */}
+        <header className="sticky top-0 z-30 flex h-[72px] items-center justify-between border-b border-[#e5e0d7] bg-[#f7f5f0] px-4 sm:px-6">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-sm bg-neutral-200" />
+            <div className="h-4 w-32 rounded bg-neutral-200" />
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-24 rounded bg-neutral-200" />
+            <div className="h-8 w-8 rounded-full bg-neutral-200" />
+          </div>
+        </header>
+
+        <div className="flex">
+          {/* Sidebar Skeleton (desktop) */}
+          <aside className="hidden w-64 shrink-0 border-r border-[#e5e0d7] p-4 lg:block">
+            <div className="space-y-3">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="flex items-center gap-3 px-3 py-2.5">
+                  <div className="h-5 w-5 rounded bg-neutral-200" />
+                  <div className="h-4 w-28 rounded bg-neutral-200" />
+                </div>
+              ))}
+            </div>
+          </aside>
+
+          {/* Main Body Skeleton */}
+          <main className="flex-1 p-6 sm:p-8">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div className="h-7 w-48 rounded bg-neutral-200" />
+                <div className="h-9 w-32 rounded bg-neutral-200" />
+              </div>
+              <div className="grid gap-6 sm:grid-cols-3">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="h-28 rounded-xs border border-neutral-200 bg-white p-5">
+                    <div className="h-4 w-20 rounded bg-neutral-200" />
+                    <div className="mt-4 h-7 w-16 rounded bg-neutral-200" />
+                  </div>
+                ))}
+              </div>
+              <div className="h-64 rounded-xs border border-neutral-200 bg-white p-6">
+                <div className="h-5 w-36 rounded bg-neutral-200" />
+                <div className="mt-4 space-y-3">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="h-10 w-full rounded bg-neutral-100" />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
     );
   }
 

@@ -1,20 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Layers3, LoaderCircle, Package } from "lucide-react";
+import { ArrowRight, Package } from "lucide-react";
 
 import { getCategories } from "@/services/categories";
 import { getProducts } from "@/services/products";
 import type { Category } from "@/types/category";
 import type { Product } from "@/types/product";
 import InlineEditable from "@/components/ui/InlineEditable";
+import { CategoryPageSkeleton } from "@/components/ui/Skeletons";
 
-export default function CategoriesPage() {
+function CategoriesContent() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("all");
+  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -35,7 +37,7 @@ export default function CategoriesPage() {
 
         if (catRes.success) {
           const active = (catRes.data || []).filter((c) => c.isActive);
-          // Sort by sortOrder, prioritizing Winter Essentials (sort 1) then Summer Essentials (sort 2)
+          // Prioritize Winter Essentials first (sort 0/1), then Summer Essentials (sort 1/2)
           active.sort((a, b) => (a.sortOrder ?? 100) - (b.sortOrder ?? 100));
           setCategories(active);
         }
@@ -46,7 +48,7 @@ export default function CategoriesPage() {
       } catch (err) {
         if (!cancelled) {
           setError(
-            err instanceof Error ? err.message : "Unable to load categories.",
+            err instanceof Error ? err.message : "Unable to load collections.",
           );
         }
       } finally {
@@ -61,25 +63,39 @@ export default function CategoriesPage() {
     };
   }, []);
 
-  // Top level categories (no parent or sortOrder < 100)
-  const topCategories = categories.filter((c) => !c.parentId);
+  // Top level season categories (Winter Essentials, Summer Essentials)
+  const topCategories = useMemo(
+    () => categories.filter((c) => !c.parentId).slice(0, 2),
+    [categories],
+  );
 
-  // Subcategories mapping
+  // Subcategories / Lines mapping
   const getSubcategories = (parentId: string) =>
     categories.filter((c) => c.parentId === parentId);
 
-  // Filter products by selected category
-  const filteredProducts =
-    selectedCategoryId === "all"
-      ? products
-      : products.filter((p) => {
-          if (p.category?.id === selectedCategoryId) return true;
-          // check if product category is child of selected category
-          const childIds = categories
-            .filter((c) => c.parentId === selectedCategoryId)
-            .map((c) => c.id);
-          return p.category?.id ? childIds.includes(p.category.id) : false;
-        });
+  // Filter products by selected category and line
+  const filteredProducts = useMemo(() => {
+    if (selectedSubcategoryId) {
+      return products.filter((p) => p.category?.id === selectedSubcategoryId);
+    }
+
+    if (selectedCategoryId === "all") {
+      return products;
+    }
+
+    const childIds = categories
+      .filter((c) => c.parentId === selectedCategoryId)
+      .map((c) => c.id);
+
+    return products.filter((p) => {
+      if (p.category?.id === selectedCategoryId) return true;
+      return p.category?.id ? childIds.includes(p.category.id) : false;
+    });
+  }, [selectedCategoryId, selectedSubcategoryId, products, categories]);
+
+  if (loading) {
+    return <CategoryPageSkeleton />;
+  }
 
   return (
     <main className="min-h-screen bg-white text-neutral-950">
@@ -93,12 +109,12 @@ export default function CategoriesPage() {
             <Link href="/" className="hover:text-neutral-950">
               Home
             </Link>{" "}
-            / <span className="text-neutral-950">Categories</span>
+            / <span className="text-neutral-950">Collections</span>
           </nav>
 
           <InlineEditable
             contentKey="categories_page_headline"
-            defaultValue="Explore our categories."
+            defaultValue="Explore our season collections."
             as="h1"
             className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl"
           />
@@ -117,24 +133,28 @@ export default function CategoriesPage() {
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight">
-              Collections &amp; Categories
-            </h2>
+            <InlineEditable
+              contentKey="categories_season_title"
+              defaultValue="Season Collections"
+              as="h2"
+              className="text-2xl font-semibold tracking-tight"
+            />
             <p className="mt-1 text-sm text-neutral-500">
-              {loading
-                ? "Loading collections..."
-                : `${categories.length} categories available`}
+              {topCategories.length} main season collections available
             </p>
           </div>
 
           {/* Category Filter Pills */}
-          {!loading && categories.length > 0 && (
+          {categories.length > 0 && (
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
-                onClick={() => setSelectedCategoryId("all")}
+                onClick={() => {
+                  setSelectedCategoryId("all");
+                  setSelectedSubcategoryId(null);
+                }}
                 className={`px-3.5 py-1.5 text-xs font-medium uppercase tracking-wider transition ${
-                  selectedCategoryId === "all"
+                  selectedCategoryId === "all" && !selectedSubcategoryId
                     ? "bg-neutral-950 text-white"
                     : "border border-neutral-300 text-neutral-700 hover:bg-neutral-50"
                 }`}
@@ -146,9 +166,12 @@ export default function CategoriesPage() {
                 <button
                   key={cat.id}
                   type="button"
-                  onClick={() => setSelectedCategoryId(cat.id)}
+                  onClick={() => {
+                    setSelectedCategoryId(cat.id);
+                    setSelectedSubcategoryId(null);
+                  }}
                   className={`px-3.5 py-1.5 text-xs font-medium uppercase tracking-wider transition ${
-                    selectedCategoryId === cat.id
+                    selectedCategoryId === cat.id && !selectedSubcategoryId
                       ? "bg-neutral-950 text-white"
                       : "border border-neutral-300 text-neutral-700 hover:bg-neutral-50"
                   }`}
@@ -160,90 +183,120 @@ export default function CategoriesPage() {
           )}
         </div>
 
-        {loading ? (
-          <div className="flex min-h-64 items-center justify-center gap-3 text-sm text-neutral-500">
-            <LoaderCircle size={22} className="animate-spin" />
-            Loading categories...
-          </div>
-        ) : error ? (
+        {error ? (
           <div className="border border-neutral-200 px-5 py-14 text-center">
             <p className="text-sm text-neutral-600">{error}</p>
           </div>
-        ) : categories.length === 0 ? (
+        ) : topCategories.length === 0 ? (
           <div className="border border-neutral-200 px-5 py-14 text-center">
-            <Layers3 size={32} className="mx-auto text-neutral-400" />
-            <p className="mt-4 font-medium">No categories available yet</p>
+            <Package size={32} className="mx-auto text-neutral-400" />
+            <p className="mt-4 font-medium">No collections available yet</p>
             <p className="mt-2 text-sm text-neutral-500">
               Please check back soon.
             </p>
           </div>
         ) : (
           <>
-            {/* Top Categories Grid */}
+            {/* Top Two Season Categories Grid: Winter Essentials & Summer Essentials */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2">
               {topCategories.map((category) => {
                 const subcats = getSubcategories(category.id);
+                // Intelligently find category image or fallback to subcategory / product image
+                const catImage =
+                  category.imageUrl ||
+                  subcats.find((s) => s.imageUrl)?.imageUrl ||
+                  products.find(
+                    (p) =>
+                      p.category?.id === category.id ||
+                      subcats.some((s) => s.id === p.category?.id),
+                  )?.images?.[0]?.url;
 
                 return (
                   <article
                     key={category.id}
-                    className="group overflow-hidden border border-neutral-200 bg-[#f7f5f0] transition hover:border-neutral-400"
+                    className="group flex flex-col overflow-hidden border border-neutral-200 bg-[#f7f5f0] transition hover:border-neutral-400 shadow-xs"
                   >
-                    <Link
-                      href={`/categories/${category.slug}`}
-                      className="block p-6 sm:p-8"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
-                            Collection
-                          </p>
-                          <h3 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-950 group-hover:underline sm:text-3xl">
-                            {category.name}
-                          </h3>
+                    {/* Category Image if available */}
+                    {catImage && (
+                      <Link
+                        href={`/categories/${category.slug}`}
+                        className="relative aspect-[16/9] w-full overflow-hidden bg-neutral-200 block"
+                      >
+                        <Image
+                          src={catImage}
+                          alt={category.name}
+                          fill
+                          sizes="(max-width: 640px) 100vw, 50vw"
+                          className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-black/10 transition-colors duration-300 group-hover:bg-transparent" />
+                      </Link>
+                    )}
+
+                    <div className="flex flex-1 flex-col justify-between p-6 sm:p-8">
+                      <div>
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
+                              Season Collection
+                            </p>
+                            <Link href={`/categories/${category.slug}`}>
+                              <h3 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-950 group-hover:underline sm:text-3xl">
+                                {category.name}
+                              </h3>
+                            </Link>
+                          </div>
+
+                          <Link
+                            href={`/categories/${category.slug}`}
+                            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-neutral-950 shadow-xs transition group-hover:bg-neutral-950 group-hover:text-white"
+                          >
+                            <ArrowRight size={16} />
+                          </Link>
                         </div>
 
-                        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-neutral-950 shadow-xs transition group-hover:bg-neutral-950 group-hover:text-white">
-                          <ArrowRight size={16} />
-                        </span>
+                        {category.description && (
+                          <p className="mt-3 max-w-xl text-sm leading-6 text-neutral-600">
+                            {category.description}
+                          </p>
+                        )}
                       </div>
 
-                      {category.description && (
-                        <p className="mt-3 max-w-xl text-sm leading-6 text-neutral-600">
-                          {category.description}
-                        </p>
-                      )}
-
+                      {/* Clean Apparel Lines (No developer badges or folder icons) */}
                       {subcats.length > 0 && (
-                        <div className="mt-5 flex flex-wrap gap-2 border-t border-neutral-200/80 pt-4">
-                          <span className="text-[11px] font-medium uppercase tracking-wider text-neutral-500">
-                            Sub-categories:
-                          </span>
-                          {subcats.map((sub) => (
-                            <span
-                              key={sub.id}
-                              className="bg-white px-2.5 py-1 text-xs text-neutral-800"
-                            >
-                              {sub.name}
-                            </span>
-                          ))}
+                        <div className="mt-6 border-t border-neutral-200/80 pt-4">
+                          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400 mb-2">
+                            Apparel Lines
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {subcats.map((sub) => (
+                              <Link
+                                key={sub.id}
+                                href={`/categories/${sub.slug}`}
+                                className="border border-neutral-300 bg-white px-3 py-1.5 text-xs font-medium text-neutral-800 transition hover:border-neutral-950 hover:bg-neutral-950 hover:text-white"
+                              >
+                                {sub.name}
+                              </Link>
+                            ))}
+                          </div>
                         </div>
                       )}
-                    </Link>
+                    </div>
                   </article>
                 );
               })}
             </div>
 
-            {/* Products in Category */}
+            {/* Products in Collection Section */}
             <div className="mt-14 border-t border-neutral-200 pt-10">
-              <div className="mb-6 flex items-center justify-between">
+              <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h3 className="text-xl font-semibold">
-                    {selectedCategoryId === "all"
-                      ? "All Products"
-                      : categories.find((c) => c.id === selectedCategoryId)
-                          ?.name || "Collection Products"}
+                    {selectedSubcategoryId
+                      ? `Styles in ${categories.find((c) => c.id === selectedSubcategoryId)?.name}`
+                      : selectedCategoryId === "all"
+                        ? "All Products"
+                        : `${categories.find((c) => c.id === selectedCategoryId)?.name || "Collection"} Styles`}
                   </h3>
                   <p className="mt-1 text-xs text-neutral-500">
                     {filteredProducts.length}{" "}
@@ -253,6 +306,48 @@ export default function CategoriesPage() {
                 </div>
               </div>
 
+              {/* Line Filter Row (Clean Pills) */}
+              {selectedCategoryId !== "all" &&
+                getSubcategories(selectedCategoryId).length > 0 && (
+                  <div className="mb-6 flex flex-wrap items-center gap-2 border-b border-neutral-100 pb-4">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                      Line:
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedSubcategoryId(null)}
+                      className={`px-3 py-1 text-xs font-medium transition ${
+                        !selectedSubcategoryId
+                          ? "bg-neutral-900 text-white"
+                          : "border border-neutral-300 text-neutral-700 hover:bg-neutral-100"
+                      }`}
+                    >
+                      All in {categories.find((c) => c.id === selectedCategoryId)?.name}
+                    </button>
+                    {getSubcategories(selectedCategoryId).map((sub) => {
+                      const isCurrent = selectedSubcategoryId === sub.id;
+                      const subCount = products.filter(
+                        (p) => p.category?.id === sub.id,
+                      ).length;
+                      return (
+                        <button
+                          key={sub.id}
+                          type="button"
+                          onClick={() => setSelectedSubcategoryId(sub.id)}
+                          className={`px-3 py-1 text-xs font-medium transition ${
+                            isCurrent
+                              ? "bg-neutral-900 text-white"
+                              : "border border-neutral-300 text-neutral-700 hover:bg-neutral-100"
+                          }`}
+                        >
+                          {sub.name} ({subCount})
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+              {/* Product Grid */}
               {filteredProducts.length === 0 ? (
                 <div className="border border-neutral-200 p-10 text-center">
                   <Package
@@ -261,7 +356,7 @@ export default function CategoriesPage() {
                     strokeWidth={1.4}
                   />
                   <p className="mt-3 text-sm font-medium text-neutral-800">
-                    No products listed in this collection yet.
+                    No products listed in this selection yet.
                   </p>
                 </div>
               ) : (
@@ -278,7 +373,6 @@ export default function CategoriesPage() {
                         <Link
                           href={`/products/${product.slug}`}
                           className="block"
-                          aria-label={`View ${product.name}`}
                         >
                           <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100">
                             {primaryImage?.url ? (
@@ -292,24 +386,24 @@ export default function CategoriesPage() {
                             ) : (
                               <div className="flex size-full items-center justify-center">
                                 <Package
-                                  size={40}
+                                  size={42}
                                   strokeWidth={1}
                                   className="text-neutral-300"
                                 />
                               </div>
                             )}
 
-                            <span className="absolute bottom-3 right-3 flex size-9 items-center justify-center border border-neutral-200 bg-white text-neutral-950 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100">
-                              <ArrowRight size={15} />
+                            <span className="absolute bottom-3 right-3 flex size-8 items-center justify-center border border-neutral-200 bg-white text-neutral-950 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100">
+                              <ArrowRight size={14} />
                             </span>
                           </div>
 
                           <div className="mt-3">
                             <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-neutral-500">
-                              {product.category?.name || "Collection"}
+                              {product.category?.name || "Apparel"}
                             </p>
 
-                            <h4 className="mt-1 line-clamp-1 text-sm font-medium leading-5 text-neutral-950 transition group-hover:underline">
+                            <h4 className="mt-1 line-clamp-1 text-sm font-medium leading-5 text-neutral-950 group-hover:underline">
                               {product.name}
                             </h4>
                           </div>
@@ -327,7 +421,7 @@ export default function CategoriesPage() {
                             href={`/products/${product.slug}`}
                             className="font-medium text-neutral-900 hover:underline"
                           >
-                            Details →
+                            View Details →
                           </Link>
                         </div>
                       </article>
@@ -339,36 +433,14 @@ export default function CategoriesPage() {
           </>
         )}
       </section>
-
-      {/* Bottom CTA Section */}
-      <section className="border-t border-neutral-200 bg-neutral-50">
-        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-12 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight">
-              Looking for Custom Development?
-            </h2>
-            <p className="mt-2 text-sm text-neutral-600">
-              Tell us what you need and we will coordinate it with our partner factories.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/custom-development"
-              className="inline-flex items-center justify-center gap-2 border border-neutral-300 bg-white px-5 py-3 text-xs font-semibold uppercase tracking-wider text-neutral-900 hover:bg-neutral-100"
-            >
-              Custom Development
-            </Link>
-
-            <Link
-              href="/contact"
-              className="inline-flex items-center justify-center gap-2 bg-neutral-950 px-5 py-3 text-xs font-semibold uppercase tracking-wider text-white hover:bg-neutral-800"
-            >
-              REQUEST A QUOTE <ArrowRight size={15} />
-            </Link>
-          </div>
-        </div>
-      </section>
     </main>
+  );
+}
+
+export default function CategoriesPage() {
+  return (
+    <Suspense fallback={<CategoryPageSkeleton />}>
+      <CategoriesContent />
+    </Suspense>
   );
 }

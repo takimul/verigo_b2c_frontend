@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { getProducts } from "@/services/products";
 import type { Product } from "@/types/product";
 import { revealUp, staggerContainer } from "@/lib/animations";
+import InlineEditable from "@/components/ui/InlineEditable";
 
 export default function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -80,14 +81,20 @@ export default function FeaturedProducts() {
               variants={revealUp}
               className="mb-3 text-[9px] font-medium uppercase tracking-[0.38em] text-[#756e64] sm:text-[10px]"
             >
-              Our Selection
+              <InlineEditable
+                contentKey="home_featured_eyebrow"
+                defaultValue="Our Selection"
+              />
             </motion.p>
 
             <motion.h2
               variants={revealUp}
               className="font-serif text-[38px] font-normal leading-none tracking-[-0.025em] text-[#171717] sm:text-[48px] lg:text-[54px]"
             >
-              Featured Collection
+              <InlineEditable
+                contentKey="home_featured_headline"
+                defaultValue="Featured Collection"
+              />
             </motion.h2>
           </div>
 
@@ -96,7 +103,10 @@ export default function FeaturedProducts() {
               href="/categories"
               className="group inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.07em] text-[#222]"
             >
-              Explore All Products
+              <InlineEditable
+                contentKey="home_featured_explore_link"
+                defaultValue="Explore All Products"
+              />
               <ArrowRight
                 size={15}
                 strokeWidth={1.4}

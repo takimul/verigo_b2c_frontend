@@ -318,15 +318,6 @@ export default function AdminProductsPage() {
         )}
 
         <div className="relative">
-          {loading && (
-            <div className="absolute inset-0 z-10 flex items-start justify-center bg-white/70 pt-16">
-              <LoaderCircle
-                size={24}
-                className="animate-spin text-neutral-700"
-              />
-            </div>
-          )}
-
           <div className="overflow-x-auto">
             <table className="w-full min-w-200 border-collapse text-left">
               <thead>
@@ -341,6 +332,26 @@ export default function AdminProductsPage() {
               </thead>
 
               <tbody className="divide-y divide-neutral-100">
+                {loading &&
+                  Array.from({ length: 6 }).map((_, i) => (
+                    <tr key={i} className="animate-pulse border-b border-neutral-100">
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="size-11 rounded-xs bg-neutral-200" />
+                          <div className="space-y-1.5">
+                            <div className="h-4 w-44 rounded-xs bg-neutral-200" />
+                            <div className="h-3 w-24 rounded-xs bg-neutral-200" />
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4"><div className="h-4 w-28 rounded-xs bg-neutral-200" /></td>
+                      <td className="px-4 py-4"><div className="h-4 w-16 rounded-xs bg-neutral-200" /></td>
+                      <td className="px-4 py-4"><div className="h-5 w-16 rounded-xs bg-neutral-200" /></td>
+                      <td className="px-4 py-4"><div className="h-4 w-12 rounded-xs bg-neutral-200" /></td>
+                      <td className="px-4 py-4 text-right"><div className="ml-auto h-8 w-24 rounded-xs bg-neutral-200" /></td>
+                    </tr>
+                  ))}
+
                 {!loading && products.length === 0 && (
                   <tr>
                     <td colSpan={6} className="px-4 py-16 text-center">

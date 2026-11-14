@@ -79,13 +79,13 @@ export default function Footer() {
   return (
     <footer className="overflow-hidden bg-[#171717] text-[#f7f5f0]">
       <div className="mx-auto max-w-[1600px] px-4 sm:px-8 lg:px-12">
-        {/* Main footer - Super compact on mobile */}
+        {/* Main footer - Enlarged & comfortable on mobile */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.1 }}
-          className="grid gap-4 border-b border-[#373634] py-5 sm:gap-10 sm:py-12 lg:grid-cols-[1.4fr_1fr_1.2fr] lg:gap-12"
+          className="grid gap-6 border-b border-[#373634] py-8 sm:gap-10 sm:py-12 lg:grid-cols-[1.4fr_1fr_1.2fr] lg:gap-12"
         >
           {/* Brand & Tagline */}
           <motion.div variants={revealUp}>
@@ -98,16 +98,16 @@ export default function Footer() {
                 <img
                   src={settings.logoUrl}
                   alt={siteName}
-                  className="max-h-7 w-auto max-w-36 object-contain brightness-0 invert sm:max-h-9 sm:max-w-45"
+                  className="max-h-8 w-auto max-w-40 object-contain  sm:max-h-9 sm:max-w-45"
                 />
               ) : (
-                <span className="font-serif text-[18px] tracking-[-0.03em] text-[#f7f5f0] sm:text-[24px]">
+                <span className="font-serif text-[20px] tracking-[-0.03em] text-[#f7f5f0] sm:text-[24px]">
                   {siteName}
                 </span>
               )}
             </Link>
 
-            <div className="mt-1.5 max-w-85 text-[9px] font-medium uppercase tracking-[0.14em] text-[#a8a197] sm:mt-3.5 sm:text-[11px] sm:tracking-[0.16em]">
+            <div className="mt-2 max-w-85 text-[10px] font-medium uppercase tracking-[0.14em] text-[#a8a197] sm:mt-3.5 sm:text-[11px] sm:tracking-[0.16em]">
               <InlineEditable
                 contentKey="footer_tagline"
                 defaultValue={tagline}
@@ -116,55 +116,70 @@ export default function Footer() {
           </motion.div>
 
           {/* Quick links & Contact grid for mobile */}
-          <div className="grid grid-cols-2 gap-3 sm:contents">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:contents">
             {/* Explore column */}
             <motion.div variants={revealUp}>
-              <p className="mb-1.5 text-[8px] font-medium uppercase tracking-[0.25em] text-[#817b73] sm:mb-4 sm:text-[9px] sm:tracking-[0.32em]">
-                Explore
+              <p className="mb-2 text-[9.5px] font-medium uppercase tracking-[0.25em] text-[#817b73] sm:mb-4 sm:text-[10px] sm:tracking-[0.32em]">
+                <InlineEditable
+                  contentKey="footer_col_explore"
+                  defaultValue="Explore"
+                />
               </p>
 
-              <nav className="flex flex-col items-start gap-1.5 sm:gap-3">
+              <nav className="flex flex-col items-start gap-2 sm:gap-3">
                 <Link
                   href="/categories"
-                  className="text-[10.5px] text-[#b8b1a8] transition-colors duration-300 hover:text-[#f7f5f0] sm:text-[12px]"
+                  className="text-[12px] text-[#b8b1a8] transition-colors duration-300 hover:text-[#f7f5f0] sm:text-[13px]"
                 >
-                  Categories
+                  <InlineEditable
+                    contentKey="footer_link_categories"
+                    defaultValue="Categories"
+                  />
                 </Link>
 
                 <Link
                   href="/about"
-                  className="text-[10.5px] text-[#b8b1a8] transition-colors duration-300 hover:text-[#f7f5f0] sm:text-[12px]"
+                  className="text-[12px] text-[#b8b1a8] transition-colors duration-300 hover:text-[#f7f5f0] sm:text-[13px]"
                 >
-                  About Us
+                  <InlineEditable
+                    contentKey="footer_link_about"
+                    defaultValue="About Us"
+                  />
                 </Link>
 
                 <Link
                   href="/contact"
-                  className="text-[10.5px] text-[#b8b1a8] transition-colors duration-300 hover:text-[#f7f5f0] sm:text-[12px]"
+                  className="text-[12px] text-[#b8b1a8] transition-colors duration-300 hover:text-[#f7f5f0] sm:text-[13px]"
                 >
-                  Request a Quote
+                  <InlineEditable
+                    contentKey="footer_link_quote"
+                    defaultValue="Request a Quote"
+                  />
                 </Link>
               </nav>
             </motion.div>
 
             {/* Contact Details & WhatsApp button */}
             <motion.div variants={revealUp}>
-              <p className="mb-1.5 text-[8px] font-medium uppercase tracking-[0.25em] text-[#817b73] sm:mb-4 sm:text-[9px] sm:tracking-[0.32em]">
-                Contact
+              <p className="mb-2 text-[9.5px] font-medium uppercase tracking-[0.25em] text-[#817b73] sm:mb-4 sm:text-[10px] sm:tracking-[0.32em]">
+                <InlineEditable
+                  contentKey="footer_col_contact"
+                  defaultValue="Contact"
+                />
               </p>
 
-              <div className="flex flex-col gap-1.5 sm:gap-3">
+              <div className="flex flex-col gap-2.5 sm:gap-3">
                 {settings?.email && (
                   <a
                     href={`mailto:${settings.email}`}
-                    className="group flex items-start gap-1.5 sm:gap-2"
+                    className="group flex items-start gap-2 sm:gap-2.5"
                   >
                     <Mail
-                      size={11}
+                      size={13}
                       strokeWidth={1.3}
                       className="mt-0.5 shrink-0 text-[#817b73] sm:size-[14px]"
                     />
-                    <span className="break-all text-[9.5px] text-[#b8b1a8] transition-colors duration-300 group-hover:text-[#f7f5f0] sm:text-[11px]">
+                    <span className="break-all text-[11px] text-[#b8b1a8] transition-colors duration-300 group-hover:text-[#f7f5f0] sm:text-[12px]">
                       {settings.email}
                     </span>
                   </a>
@@ -173,28 +188,32 @@ export default function Footer() {
                 {settings?.phone && (
                   <a
                     href={`tel:${settings.phone}`}
-                    className="group flex items-start gap-1.5 sm:gap-2"
+                    className="group flex items-start gap-2 sm:gap-2.5"
                   >
                     <Phone
-                      size={11}
+                      size={13}
                       strokeWidth={1.3}
                       className="mt-0.5 shrink-0 text-[#817b73] sm:size-[14px]"
                     />
-                    <span className="text-[9.5px] text-[#b8b1a8] transition-colors duration-300 group-hover:text-[#f7f5f0] sm:text-[11px]">
+                    <span className="text-[11px] text-[#b8b1a8] transition-colors duration-300 group-hover:text-[#f7f5f0] sm:text-[12px]">
                       {settings.phone}
                     </span>
                   </a>
                 )}
 
+                {/* Visible on Mobile as well as Desktop */}
                 {settings?.address && (
-                  <div className="hidden sm:flex sm:items-start sm:gap-2.5">
+                  <div className="flex items-start gap-2 sm:gap-2.5">
                     <MapPin
-                      size={14}
+                      size={13}
                       strokeWidth={1.3}
-                      className="mt-0.5 shrink-0 text-[#817b73]"
+                      className="mt-0.5 shrink-0 text-[#817b73] sm:size-[14px]"
                     />
-                    <span className="text-[11px] text-[#b8b1a8]">
-                      {settings.address}
+                    <span className="text-[11px] leading-relaxed text-[#b8b1a8] sm:text-[12px]">
+                      <InlineEditable
+                        contentKey="footer_address_text"
+                        defaultValue={settings.address}
+                      />
                     </span>
                   </div>
                 )}
@@ -205,19 +224,26 @@ export default function Footer() {
                   href={`https://wa.me/${settings.whatsapp.replace(/\D/g, "")}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-2 inline-flex items-center border border-[#4a4845] px-2 py-1 text-[8px] font-medium uppercase tracking-widest text-[#d8d2c9] transition-colors duration-300 hover:border-[#f7f5f0] hover:text-[#f7f5f0] sm:mt-4 sm:px-4 sm:py-2.5 sm:text-[9px]"
+                  className="mt-3 inline-flex items-center border border-[#4a4845] px-3.5 py-2 text-[9.5px] font-medium uppercase tracking-widest text-[#d8d2c9] transition-colors duration-300 hover:border-[#f7f5f0] hover:text-[#f7f5f0] sm:mt-4 sm:px-4 sm:py-2.5 sm:text-[10px]"
                 >
-                  WhatsApp Us
+                  <InlineEditable
+                    contentKey="footer_whatsapp_btn"
+                    defaultValue="WhatsApp Us"
+                  />
                 </a>
               )}
             </motion.div>
           </div>
         </motion.div>
 
-        {/* Bottom bar - Minimized */}
-        <div className="flex items-center justify-between py-3 text-[8px] text-[#6f6a63] sm:py-5 sm:text-[9px]">
+        {/* Bottom bar */}
+        <div className="flex flex-col gap-2 py-4 text-[9.5px] text-[#6f6a63] sm:flex-row sm:items-center sm:justify-between sm:py-5 sm:text-[10px]">
           <p className="uppercase tracking-[0.1em]">
-            © {year ?? ""} {siteName}
+            © {year ?? ""} {siteName}.{" "}
+            <InlineEditable
+              contentKey="footer_rights_reserved"
+              defaultValue="All rights reserved."
+            />
           </p>
 
           <div className="flex items-center gap-4">
@@ -233,7 +259,7 @@ export default function Footer() {
                   aria-label={social.label}
                   className="text-[#817b73] transition-colors duration-300 hover:text-[#f7f5f0]"
                 >
-                  <Icon size={13} className="sm:size-[15px]" />
+                  <Icon size={14} className="sm:size-[15px]" />
                 </a>
               );
             })}

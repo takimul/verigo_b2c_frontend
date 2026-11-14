@@ -248,12 +248,6 @@ export default function AdminInquiriesPage() {
 
         {/* Table */}
         <div className="relative overflow-x-auto">
-          {loading && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70">
-              <LoaderCircle size={24} className="animate-spin text-neutral-700" />
-            </div>
-          )}
-
           <table className="w-full min-w-[850px] text-left text-sm">
             <thead className="border-b border-neutral-200 bg-neutral-50 text-[11px] font-bold uppercase tracking-wider text-neutral-500">
               <tr>
@@ -266,6 +260,33 @@ export default function AdminInquiriesPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-100">
+              {loading &&
+                Array.from({ length: 6 }).map((_, i) => (
+                  <tr key={i} className="animate-pulse border-b border-neutral-100">
+                    <td className="px-4 py-4">
+                      <div className="space-y-1.5">
+                        <div className="h-4 w-36 rounded-xs bg-neutral-200" />
+                        <div className="h-3 w-48 rounded-xs bg-neutral-200" />
+                      </div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="h-4 w-32 rounded-xs bg-neutral-200" />
+                    </td>
+                    <td className="px-4 py-4 text-center">
+                      <div className="mx-auto h-4 w-12 rounded-xs bg-neutral-200" />
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="h-3.5 w-24 rounded-xs bg-neutral-200" />
+                    </td>
+                    <td className="px-4 py-4 text-center">
+                      <div className="mx-auto h-5 w-20 rounded-xs bg-neutral-200" />
+                    </td>
+                    <td className="px-4 py-4 text-right">
+                      <div className="ml-auto h-8 w-16 rounded-xs bg-neutral-200" />
+                    </td>
+                  </tr>
+                ))}
+
               {!loading && items.length === 0 && (
                 <tr>
                   <td colSpan={6} className="py-16 text-center text-xs text-neutral-500">

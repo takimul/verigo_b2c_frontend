@@ -6,7 +6,6 @@ import {
   ArrowRight,
   AtSign,
   ExternalLink,
-  LoaderCircle,
   MapPin,
   MessageCircle,
   Phone,
@@ -15,6 +14,7 @@ import {
 import { getPublicSettings } from "@/services/settings";
 import type { SiteSettings } from "@/types/settings";
 import InlineEditable from "@/components/ui/InlineEditable";
+import { ContactDetailsSkeleton } from "@/components/ui/Skeletons";
 
 function whatsappUrl(value: string) {
   const number = value.replace(/[^\d]/g, "");
@@ -116,10 +116,7 @@ export default function ContactPage() {
           </p>
 
           {loading ? (
-            <div className="mt-7 flex items-center gap-3 text-sm text-neutral-500">
-              <LoaderCircle size={20} className="animate-spin" />
-              Loading contact details...
-            </div>
+            <ContactDetailsSkeleton />
           ) : error ? (
             <div className="mt-6 border border-neutral-200 p-5">
               <p className="text-sm text-neutral-700">

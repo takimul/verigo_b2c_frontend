@@ -9,6 +9,7 @@ import { Menu, Search, X, ArrowUpRight, Mail, Phone } from "lucide-react";
 import { getPublicSettings } from "@/services/settings";
 import type { SiteSettings } from "@/types/settings";
 import InlineEditable from "@/components/ui/InlineEditable";
+import { useLiveEdit } from "@/context/LiveEditContext";
 
 const navigation = [
   { label: "Home", href: "/" },
@@ -23,6 +24,9 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [mounted, setMounted] = useState(false);
+  const { getContent } = useLiveEdit();
+  const showTitleBelowLogo =
+    getContent("header_show_title_below_logo", "true") === "true";
 
   useEffect(() => {
     setMounted(true);
@@ -78,6 +82,7 @@ export default function Navbar() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  const siteName = settings?.siteName || "Verigo Essential";
   const announcementText =
     settings?.announcementText ||
     "Sourced from Bangladesh. Supplied to the world.";
@@ -91,7 +96,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-[#f7f5f0]/95 backdrop-blur-md">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#f7f5f0]/95 backdrop-blur-md shadow-2xs">
         {/* Announcement Bar */}
         <div className="border-b border-black/10 bg-[#171717] px-4 py-2 text-center text-[10px] font-medium uppercase tracking-[0.18em] text-[#f7f5f0] sm:text-[11px]">
           <InlineEditable
@@ -106,17 +111,38 @@ export default function Navbar() {
             <div className="flex items-center">
               <Link
                 href="/"
-                className="group flex flex-col leading-none"
+                className="group inline-flex items-center"
                 onClick={() => setMobileOpen(false)}
-                aria-label="Verigo Essential Home"
+                aria-label={`${siteName} Home`}
               >
-                <span className="text-[22px] font-medium tracking-[0.24em] text-[#111]">
-                  VERIGO
-                </span>
-
-                <span className="mt-1 text-center text-[7px] tracking-[0.42em] text-[#6f6b64]">
-                  ESSENTIAL
-                </span>
+                {settings?.logoUrl ? (
+                  <span className="flex flex-col items-center leading-none">
+                    <img
+                      src={settings.logoUrl}
+                      alt={siteName}
+                      className="h-7 sm:h-8 w-auto max-w-[140px] sm:max-w-[170px] object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+                    />
+                    {showTitleBelowLogo && (
+                      <span className="mt-1 flex flex-col items-center leading-none">
+                        <span className="text-[10px] sm:text-[11px] font-medium tracking-[0.24em] text-[#111]">
+                          VERIGO
+                        </span>
+                        <span className="mt-0.5 text-center text-[5px] sm:text-[5.5px] tracking-[0.42em] text-[#6f6b64]">
+                          ESSENTIAL
+                        </span>
+                      </span>
+                    )}
+                  </span>
+                ) : (
+                  <span className="flex flex-col leading-none">
+                    <span className="text-[22px] font-medium tracking-[0.24em] text-[#111]">
+                      VERIGO
+                    </span>
+                    <span className="mt-1 text-center text-[7px] tracking-[0.42em] text-[#6f6b64]">
+                      ESSENTIAL
+                    </span>
+                  </span>
+                )}
               </Link>
 
               <span className="hidden border-l border-black/10 py-1 pl-5 ml-5 text-[8.5px] font-medium uppercase tracking-[0.22em] text-[#6f6b64] xl:inline-block">
@@ -135,7 +161,10 @@ export default function Navbar() {
                   href={item.href}
                   className="group relative text-[12px] font-medium tracking-[0.04em] text-[#252525]"
                 >
-                  {item.label}
+                  <InlineEditable
+                    contentKey={`nav_link_${item.label.toLowerCase().replace(/\s+/g, "_")}`}
+                    defaultValue={item.label}
+                  />
 
                   <span className="absolute -bottom-1 left-0 h-px w-0 bg-[#111] transition-all duration-300 group-hover:w-full" />
                 </Link>
@@ -156,7 +185,10 @@ export default function Navbar() {
                 href="/contact"
                 className="group flex items-center gap-3 bg-[#111] px-5 py-3 text-[11px] font-medium uppercase tracking-[0.08em] text-white transition-all duration-300 hover:bg-[#292929]"
               >
-                REQUEST A QUOTE
+                <InlineEditable
+                  contentKey="nav_quote_cta"
+                  defaultValue="REQUEST A QUOTE"
+                />
                 <ArrowUpRight
                   size={14}
                   strokeWidth={1.5}
@@ -189,6 +221,12 @@ export default function Navbar() {
         </div>
       </header>
 
+      {/* Spacer so page content never goes behind fixed header */}
+      <div
+        className="h-[110px] sm:h-[114px] w-full shrink-0"
+        aria-hidden="true"
+      />
+
       {/* Full-Screen Luxury Mobile Navigation Drawer via Portal (Zero Layout Shift, Above All Content) */}
       {mounted &&
         createPortal(
@@ -210,15 +248,37 @@ export default function Navbar() {
                   <Link
                     href="/"
                     onClick={() => setMobileOpen(false)}
-                    className="flex flex-col leading-none"
-                    aria-label="Verigo Essential Home"
+                    className="inline-flex items-center"
+                    aria-label={`${siteName} Home`}
                   >
-                    <span className="text-[22px] font-medium tracking-[0.24em] text-[#111]">
-                      VERIGO
-                    </span>
-                    <span className="mt-1 text-center text-[7px] tracking-[0.42em] text-[#6f6b64]">
-                      ESSENTIAL
-                    </span>
+                    {settings?.logoUrl ? (
+                      <span className="flex flex-col items-center leading-none">
+                        <img
+                          src={settings.logoUrl}
+                          alt={siteName}
+                          className="h-7 sm:h-8 w-auto max-w-[140px] sm:max-w-[170px] object-contain"
+                        />
+                        {showTitleBelowLogo && (
+                          <span className="mt-1 flex flex-col items-center leading-none">
+                            <span className="text-[10px] sm:text-[11px] font-medium tracking-[0.24em] text-[#111]">
+                              VERIGO
+                            </span>
+                            <span className="mt-0.5 text-center text-[5px] sm:text-[5.5px] tracking-[0.42em] text-[#6f6b64]">
+                              ESSENTIAL
+                            </span>
+                          </span>
+                        )}
+                      </span>
+                    ) : (
+                      <span className="flex flex-col leading-none">
+                        <span className="text-[22px] font-medium tracking-[0.24em] text-[#111]">
+                          VERIGO
+                        </span>
+                        <span className="mt-1 text-center text-[7px] tracking-[0.42em] text-[#6f6b64]">
+                          ESSENTIAL
+                        </span>
+                      </span>
+                    )}
                   </Link>
 
                   <button
@@ -270,7 +330,10 @@ export default function Navbar() {
                               {isActive && (
                                 <span className="h-2 w-2 rounded-full bg-[#111]" />
                               )}
-                              {item.label}
+                              <InlineEditable
+                                contentKey={`nav_link_${item.label.toLowerCase().replace(/\s+/g, "_")}`}
+                                defaultValue={item.label}
+                              />
                             </span>
                             <ArrowUpRight
                               size={17}
@@ -290,7 +353,10 @@ export default function Navbar() {
                       onClick={() => setMobileOpen(false)}
                       className="flex w-full items-center justify-center gap-3 bg-[#111] px-6 py-4 text-[11px] font-medium uppercase tracking-[0.14em] text-white shadow-md active:bg-[#333] transition"
                     >
-                      REQUEST A QUOTE
+                      <InlineEditable
+                        contentKey="nav_quote_cta"
+                        defaultValue="REQUEST A QUOTE"
+                      />
                       <ArrowUpRight size={15} />
                     </Link>
                   </div>
@@ -373,7 +439,7 @@ export default function Navbar() {
               </motion.div>
             )}
           </AnimatePresence>,
-          document.body
+          document.body,
         )}
     </>
   );

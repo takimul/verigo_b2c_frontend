@@ -5,6 +5,8 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import InquiryForm from "@/components/inquiries/InquiryForm";
+import { InquiryPageSkeleton } from "@/components/ui/Skeletons";
+import InlineEditable from "@/components/ui/InlineEditable";
 
 function Content() {
   const params = useSearchParams();
@@ -14,15 +16,24 @@ function Content() {
       <header className="border-b border-neutral-200 bg-white">
         <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-neutral-500">
-            Verigo Essential · Sourced from Bangladesh
+            <InlineEditable
+              contentKey="inquiry_page_eyebrow"
+              defaultValue="Verigo Essential · Sourced from Bangladesh"
+            />
           </p>
-          <h1 className="mt-3 max-w-3xl font-serif text-3xl font-normal tracking-tight text-neutral-950 sm:text-5xl">
-            Request a quote.
-          </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-neutral-600 sm:text-base">
-            Share your product, estimated quantity and branding requirements, and
-            we will send you a quote.
-          </p>
+          <InlineEditable
+            contentKey="inquiry_page_headline"
+            defaultValue="Request a quote."
+            as="h1"
+            className="mt-3 max-w-3xl font-serif text-3xl font-normal tracking-tight text-neutral-950 sm:text-5xl"
+          />
+          <InlineEditable
+            contentKey="inquiry_page_description"
+            defaultValue="Share your product, estimated quantity and branding requirements, and we will send you a quote."
+            as="p"
+            multiline
+            className="mt-4 max-w-2xl text-sm leading-7 text-neutral-600 sm:text-base"
+          />
         </div>
       </header>
 
@@ -30,24 +41,32 @@ function Content() {
         {/* Left Column: How It Works */}
         <aside className="border border-neutral-200 bg-white p-6 h-fit">
           <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
-            How it works
+            <InlineEditable
+              contentKey="inquiry_how_it_works_title"
+              defaultValue="How it works"
+            />
           </p>
           <ol className="mt-5 space-y-4">
             {[
-              ["01", "Share your requirements"],
-              ["02", "Our team reviews your request"],
-              ["03", "Discuss the next steps"],
-            ].map(([n, t]) => (
+              ["01", "inquiry_step_1", "Share your requirements"],
+              ["02", "inquiry_step_2", "Our team reviews your request"],
+              ["03", "inquiry_step_3", "Discuss the next steps"],
+            ].map(([n, k, t]) => (
               <li key={n} className="flex gap-3 text-sm">
                 <span className="text-xs text-neutral-400 font-medium">{n}</span>
-                <span className="font-medium text-neutral-900">{t}</span>
+                <span className="font-medium text-neutral-900">
+                  <InlineEditable contentKey={k} defaultValue={t} />
+                </span>
               </li>
             ))}
           </ol>
-          <p className="mt-6 text-xs leading-6 text-neutral-600 border-t border-neutral-100 pt-4">
-            Include approximate quantities, sizes, colors, and branding
-            preferences to help us respond accurately.
-          </p>
+          <div className="mt-6 border-t border-neutral-100 pt-4 text-xs leading-6 text-neutral-600">
+            <InlineEditable
+              contentKey="inquiry_guidance_note"
+              defaultValue="Include approximate quantities, sizes, colors, and branding preferences to help us respond accurately."
+              multiline
+            />
+          </div>
 
           <div className="mt-6 border-t border-neutral-100 pt-5">
             <a
@@ -57,7 +76,10 @@ function Content() {
               className="inline-flex items-center gap-2 text-xs font-medium text-neutral-700 hover:text-black transition"
             >
               <MessageCircle size={15} />
-              Prefer WhatsApp? Direct Chat
+              <InlineEditable
+                contentKey="inquiry_whatsapp_text"
+                defaultValue="Prefer WhatsApp? Direct Chat"
+              />
             </a>
           </div>
         </aside>
@@ -73,13 +95,7 @@ function Content() {
 
 export default function InquiryPage() {
   return (
-    <Suspense
-      fallback={
-        <main className="min-h-screen p-8 text-sm text-neutral-500">
-          Loading inquiry form...
-        </main>
-      }
-    >
+    <Suspense fallback={<InquiryPageSkeleton />}>
       <Content />
     </Suspense>
   );

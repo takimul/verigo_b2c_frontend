@@ -24,6 +24,7 @@ import {
   ShieldCheck,
   Trash2,
   Upload,
+  User,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -36,6 +37,15 @@ import {
   uploadLogo,
   type UpdateSettingsPayload,
 } from "@/services/settings";
+import {
+  deleteEmployeeImage,
+  getEmployeeProfile,
+  updateEmployeeProfile,
+  uploadEmployeeImage,
+  DEFAULT_EMPLOYEE_PROFILE,
+  type EmployeeProfile,
+} from "@/services/employees";
+import { useLiveEdit } from "@/context/LiveEditContext";
 import type { SiteSettings } from "@/types/settings";
 import { FaInstagram } from "react-icons/fa6";
 
@@ -67,7 +77,7 @@ const emptyForm: EditableSettings = {
   announcementText: "",
 };
 
-type ConfirmAction = "logo" | "banner" | null;
+type ConfirmAction = "logo" | "banner" | "employee" | null;
 
 const inputClass =
   "mt-2 w-full border border-[#ded9d0] bg-white px-4 py-3 text-sm text-[#171717] outline-none transition placeholder:text-[#a09a90] focus:border-[#171717] focus:ring-1 focus:ring-[#171717]";
@@ -162,7 +172,7 @@ function ImageManager({
   title: string;
   description: string;
   imageUrl: string | null;
-  kind: "logo" | "banner";
+  kind: "logo" | "banner" | "employee";
   busy: boolean;
   onUpload: (file: File) => Promise<void>;
   onDelete: () => void;
@@ -260,7 +270,11 @@ function ImageManager({
 
       <div
         className={`relative flex min-h-36 items-center justify-center overflow-hidden border border-dashed border-[#ded9d0] bg-[#f8f6f1] ${
-          kind === "banner" ? "aspect-16/7" : "aspect-5/3"
+          kind === "banner"
+            ? "aspect-16/7"
+            : kind === "employee"
+              ? "aspect-3/4 max-w-[200px] mx-auto"
+              : "aspect-5/3"
         }`}
       >
         {shownImage ? (
@@ -345,17 +359,42 @@ export default function AdminSettingsPage() {
   const [form, setForm] = useState<EditableSettings>(emptyForm);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [busyImage, setBusyImage] = useState<"logo" | "banner" | null>(null);
+  const [busyImage, setBusyImage] = useState<"logo" | "banner" | "employee" | null>(null);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [employee, setEmployee] = useState<EmployeeProfile>(DEFAULT_EMPLOYEE_PROFILE);
+
+  const { getContent, updateContentValue } = useLiveEdit();
+  const showTitleBelowLogo =
+    getContent("header_show_title_below_logo", "true") === "true";
+
+  const handleToggleTitleBelowLogo = async () => {
+    const nextVal = showTitleBelowLogo ? "false" : "true";
+    try {
+      await updateContentValue("header_show_title_below_logo", nextVal);
+      toast.success(
+        nextVal === "true"
+          ? "Navbar will display site title below logo."
+          : "Navbar will only show logo without title text.",
+      );
+    } catch {
+      toast.error("Failed to update logo display preference.");
+    }
+  };
 
   const loadSettings = useCallback(async () => {
     setIsLoading(true);
 
     try {
-      const response = await getAdminSettings();
-      setSettings(response.data);
-      setForm(toEditableSettings(response.data));
+      const [settingsRes, employeeRes] = await Promise.all([
+        getAdminSettings(),
+        getEmployeeProfile(),
+      ]);
+      setSettings(settingsRes.data);
+      setForm(toEditableSettings(settingsRes.data));
+      if (employeeRes) {
+        setEmployee(employeeRes);
+      }
     } catch (error) {
       toast.error(
         error instanceof Error
@@ -373,6 +412,10 @@ export default function AdminSettingsPage() {
 
   const setField = (key: keyof EditableSettings, value: string) => {
     setForm((current) => ({ ...current, [key]: value }));
+  };
+
+  const setEmployeeField = (key: keyof EmployeeProfile, value: string) => {
+    setEmployee((current) => ({ ...current, [key]: value }));
   };
 
   const handleSave = async (event: FormEvent<HTMLFormElement>) => {
@@ -401,10 +444,13 @@ export default function AdminSettingsPage() {
         announcementText: form.announcementText.trim(),
       };
 
-      const response = await updateSettings(payload);
+      const [response] = await Promise.all([
+        updateSettings(payload),
+        updateEmployeeProfile(employee),
+      ]);
       setSettings(response.data);
       setForm(toEditableSettings(response.data));
-      toast.success(response.message || "Site settings saved.");
+      toast.success("Site settings & employee profile saved.");
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Could not save settings.",
@@ -414,20 +460,26 @@ export default function AdminSettingsPage() {
     }
   };
 
-  const handleUpload = async (kind: "logo" | "banner", file: File) => {
+  const handleUpload = async (kind: "logo" | "banner" | "employee", file: File) => {
     setBusyImage(kind);
 
     try {
-      const response =
-        kind === "logo"
-          ? await uploadLogo(file)
-          : await uploadBannerImage(file);
+      if (kind === "employee") {
+        const res = await uploadEmployeeImage(file);
+        setEmployee((prev) => ({ ...prev, imageUrl: res.imageUrl }));
+        toast.success("Employee photo uploaded successfully.");
+      } else {
+        const response =
+          kind === "logo"
+            ? await uploadLogo(file)
+            : await uploadBannerImage(file);
 
-      setSettings(response.data);
-      toast.success(
-        response.message ||
-          `${kind === "logo" ? "Logo" : "Banner"} uploaded successfully.`,
-      );
+        setSettings(response.data);
+        toast.success(
+          response.message ||
+            `${kind === "logo" ? "Logo" : "Banner"} uploaded successfully.`,
+        );
+      }
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : `Could not upload ${kind}.`,
@@ -444,14 +496,21 @@ export default function AdminSettingsPage() {
     setIsDeleting(true);
 
     try {
-      const response =
-        confirmAction === "logo"
-          ? await deleteLogo()
-          : await deleteBannerImage();
+      if (confirmAction === "employee") {
+        await deleteEmployeeImage();
+        setEmployee((prev) => ({ ...prev, imageUrl: null }));
+        setConfirmAction(null);
+        toast.success("Employee photo removed.");
+      } else {
+        const response =
+          confirmAction === "logo"
+            ? await deleteLogo()
+            : await deleteBannerImage();
 
-      setSettings(response.data);
-      setConfirmAction(null);
-      toast.success(response.message || "Image removed successfully.");
+        setSettings(response.data);
+        setConfirmAction(null);
+        toast.success(response.message || "Image removed successfully.");
+      }
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Could not remove image.",
@@ -463,9 +522,23 @@ export default function AdminSettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[55vh] flex-col items-center justify-center gap-4">
-        <LoaderCircle className="h-7 w-7 animate-spin text-[#6f6b64]" />
-        <p className="text-sm text-[#777168]">Loading site settings...</p>
+      <div className="mx-auto max-w-5xl space-y-8 animate-pulse">
+        <div className="border-b border-neutral-200 pb-5">
+          <div className="h-6 w-48 rounded bg-neutral-200" />
+          <div className="mt-2 h-3.5 w-72 rounded bg-neutral-200" />
+        </div>
+        <div className="grid gap-6 sm:grid-cols-2">
+          <div className="border border-neutral-200 bg-white p-6 space-y-4">
+            <div className="h-4 w-32 rounded bg-neutral-200" />
+            <div className="h-10 w-full rounded bg-neutral-100" />
+            <div className="h-4 w-28 rounded bg-neutral-200" />
+            <div className="h-10 w-full rounded bg-neutral-100" />
+          </div>
+          <div className="border border-neutral-200 bg-white p-6 space-y-4">
+            <div className="h-4 w-32 rounded bg-neutral-200" />
+            <div className="h-24 w-full rounded bg-neutral-100" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -474,7 +547,7 @@ export default function AdminSettingsPage() {
     <>
       {confirmAction && (
         <ConfirmDialog
-          title={`Remove ${confirmAction === "logo" ? "site logo" : "homepage banner"}?`}
+          title={`Remove ${confirmAction === "logo" ? "site logo" : confirmAction === "banner" ? "homepage banner" : "leadership photo"}?`}
           description="This removes the currently uploaded image from your site. You can upload a replacement at any time."
           busy={isDeleting}
           onCancel={() => setConfirmAction(null)}
@@ -535,6 +608,35 @@ export default function AdminSettingsPage() {
                 onUpload={(file) => handleUpload("logo", file)}
                 onDelete={() => setConfirmAction("logo")}
               />
+
+              {/* Show/Hide Brand Title Below Logo Toggle Option */}
+              <div className="mt-5 border-t border-[#eeeae3] pt-4">
+                <div className="flex items-center justify-between">
+                  <div className="pr-4">
+                    <p className="text-sm font-medium text-[#171717]">
+                      Show site title below logo
+                    </p>
+                    <p className="mt-0.5 text-xs text-[#777168]">
+                      Display &ldquo;VERIGO ESSENTIAL&rdquo; underneath the uploaded logo in navigation. Turn this off if your uploaded logo already contains the company name.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={showTitleBelowLogo}
+                    onClick={() => void handleToggleTitleBelowLogo()}
+                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
+                      showTitleBelowLogo ? "bg-[#171717]" : "bg-[#ded9d0]"
+                    }`}
+                  >
+                    <span
+                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-xs ring-0 transition duration-200 ease-in-out ${
+                        showTitleBelowLogo ? "translate-x-5" : "translate-x-0"
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
             </div>
           </SectionCard>
 
@@ -581,6 +683,67 @@ export default function AdminSettingsPage() {
                 {form.announcementText}
               </div>
             )}
+          </SectionCard>
+
+          <SectionCard
+            title="Employee / Leadership profile"
+            description="Founder & leadership profile featured on the About page above 'How We Work'."
+            icon={<User className="h-5 w-5" />}
+          >
+            <div className="grid gap-5 sm:grid-cols-2">
+              <Field
+                label="Full name"
+                value={employee.name}
+                onChange={(value) => setEmployeeField("name", value)}
+                placeholder="Md. Managing Director"
+              />
+              <Field
+                label="Role / Designation"
+                value={employee.role}
+                onChange={(value) => setEmployeeField("role", value)}
+                placeholder="Founder & Head of Global Sourcing"
+              />
+              <Field
+                label="Direct email"
+                type="email"
+                value={employee.email}
+                onChange={(value) => setEmployeeField("email", value)}
+                placeholder="director@verigoessential.com"
+              />
+              <Field
+                label="Direct phone / WhatsApp"
+                value={employee.phone}
+                onChange={(value) => setEmployeeField("phone", value)}
+                placeholder="+880 1918-243120"
+              />
+            </div>
+
+            <div className="mt-4">
+              <label className="block">
+                <span className={labelClass}>Bio / Personal statement</span>
+                <textarea
+                  rows={4}
+                  className={`${inputClass} resize-y`}
+                  value={employee.bio}
+                  onChange={(event) =>
+                    setEmployeeField("bio", event.target.value)
+                  }
+                  placeholder="Share the founder's experience, dedication to quality, and manufacturing expertise..."
+                />
+              </label>
+            </div>
+
+            <div className="mt-4 border-t border-[#eeeae3] pt-5">
+              <ImageManager
+                title="Leadership portrait photo"
+                description="Upload a professional portrait photo of the client / founder (vertical 3:4 ratio recommended)."
+                imageUrl={employee.imageUrl}
+                kind="employee"
+                busy={busyImage === "employee"}
+                onUpload={(file) => handleUpload("employee", file)}
+                onDelete={() => setConfirmAction("employee")}
+              />
+            </div>
           </SectionCard>
 
           <SectionCard
