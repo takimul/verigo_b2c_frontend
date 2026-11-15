@@ -136,7 +136,7 @@ function trimFileBeforeUpload(file: File): Promise<File> {
 }
 
 export default function EmployeeSection() {
-  const { isSuperAdmin, isEditMode } = useLiveEdit();
+  const { isSuperAdmin, isEditMode, getContent } = useLiveEdit();
   const [profile, setProfile] = useState<EmployeeProfile>(DEFAULT_EMPLOYEE_PROFILE);
   const [isLoading, setIsLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -170,6 +170,31 @@ export default function EmployeeSection() {
       mounted = false;
     };
   }, []);
+
+  // Clean up legacy hardcoded badge if present in local storage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("verigo_storefront_content_overrides");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.about_employee_badge === "FOUNDER & MANAGING DIRECTOR") {
+            delete parsed.about_employee_badge;
+            localStorage.setItem(
+              "verigo_storefront_content_overrides",
+              JSON.stringify(parsed),
+            );
+          }
+        }
+      } catch {}
+    }
+  }, []);
+
+  const rawBadge = getContent("about_employee_badge", profile.badge ?? "");
+  const badgeValue =
+    rawBadge === "FOUNDER & MANAGING DIRECTOR"
+      ? (profile.badge ?? "")
+      : (profile.badge ?? rawBadge);
 
   // When no image exists in backend, imageSource is null (shows black/white avatar, not sample photo)
   const imageSource = profile.imageUrl?.trim() || null;
@@ -466,12 +491,14 @@ export default function EmployeeSection() {
               {/* Right Column: Bio, Credentials & Direct Contacts */}
               <div className="flex flex-col justify-between">
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-neutral-500">
-                    <InlineEditable
-                      contentKey="about_employee_badge"
-                      defaultValue="FOUNDER & MANAGING DIRECTOR"
-                    />
-                  </p>
+                  <InlineEditable
+                    contentKey="about_employee_badge"
+                    defaultValue={badgeValue}
+                    allowEmpty
+                    placeholder="+ Add eyebrow badge (optional)"
+                    as="p"
+                    className="text-[11px] font-semibold uppercase tracking-[0.24em] text-neutral-500 mb-1"
+                  />
 
                   <h3 className="mt-2 font-serif text-3xl font-normal tracking-tight text-neutral-950 sm:text-4xl">
                     <InlineEditable

@@ -447,6 +447,7 @@ export default function AdminSettingsPage() {
       const [response] = await Promise.all([
         updateSettings(payload),
         updateEmployeeProfile(employee),
+        updateContentValue("about_employee_badge", (employee.badge ?? "").trim()),
       ]);
       setSettings(response.data);
       setForm(toEditableSettings(response.data));
@@ -702,6 +703,12 @@ export default function AdminSettingsPage() {
                 value={employee.role}
                 onChange={(value) => setEmployeeField("role", value)}
                 placeholder="Founder & Head of Global Sourcing"
+              />
+              <Field
+                label="Top eyebrow badge (Optional)"
+                value={employee.badge || ""}
+                onChange={(value) => setEmployeeField("badge", value)}
+                placeholder="Leave blank to hide (e.g. FOUNDER & MANAGING DIRECTOR)"
               />
               <Field
                 label="Direct email"

@@ -18,6 +18,8 @@ interface InlineEditableProps {
   multiline?: boolean;
   hoverDelay?: number;
   children?: ReactNode;
+  allowEmpty?: boolean;
+  placeholder?: string;
 }
 
 export default function InlineEditable({
@@ -28,6 +30,8 @@ export default function InlineEditable({
   multiline = false,
   hoverDelay = 250,
   children,
+  allowEmpty = false,
+  placeholder,
 }: InlineEditableProps) {
   const { isSuperAdmin, isEditMode, getContent, updateContentValue, resetContentValue } =
     useLiveEdit();
@@ -90,7 +94,7 @@ export default function InlineEditable({
       e.preventDefault();
       e.stopPropagation();
     }
-    if (draftText.trim() === "") return;
+    if (!allowEmpty && draftText.trim() === "") return;
     setIsSaving(true);
     try {
       await updateContentValue(contentKey, draftText.trim());
@@ -117,9 +121,30 @@ export default function InlineEditable({
     setIsEditing(false);
   };
 
+  const isTextEmpty = (!currentText || currentText.trim() === "") && (!children || children === "");
+
   // If not super admin or edit mode is off, render pure component without any overhead
   if (!isSuperAdmin || !isEditMode) {
+    if (allowEmpty && isTextEmpty) {
+      return null;
+    }
     return <Component className={className}>{children ?? currentText}</Component>;
+  }
+
+  // If empty and in edit mode with allowEmpty enabled, render an inviting dashed placeholder button
+  if (allowEmpty && isTextEmpty && !isEditing) {
+    return (
+      <span
+        onClick={startEditing}
+        role="button"
+        tabIndex={0}
+        title={`Add optional text (${contentKey})`}
+        className="inline-flex items-center gap-1.5 cursor-pointer rounded-xs border border-dashed border-neutral-300 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-neutral-400 transition hover:border-amber-500 hover:bg-amber-500/10 hover:text-amber-800"
+      >
+        <Edit3 size={10} />
+        <span>{placeholder || "+ Add optional badge"}</span>
+      </span>
+    );
   }
 
   return (
